@@ -1,0 +1,309 @@
+
+:root {
+    --um-red: #B41E34; 
+    --um-dark-red: #8B1829; 
+    --um-light-gray: #f9f9f9;
+    --um-dark-text: #333333;
+}
+
+
+.split-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+.left-section {
+    flex: 1; 
+    background-image: url('/image/gate.jpg'); 
+    background-size: cover;
+    background-position: center;
+    color: white;
+    position: relative;
+    
+    clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%); 
+    filter: sepia(40%) saturate(200%) hue-rotate(-25deg) brightness(100%) contrast(90%) ;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4); 
+    clip-path: inherit; 
+    display: flex;
+    align-items: center; 
+    padding-left: 10%;
+}
+
+.welcome-content h1 {
+    font-size: 2.5em;
+    font-weight: 800;
+    margin-bottom: 0.5em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+
+.welcome-content h1 .um-color {
+    color: var(--um-red); 
+}
+
+
+.right-section {
+    flex: 1; 
+    background-color: var(--um-light-gray);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow-y: auto; 
+}
+
+.registration-card {
+    background: white;
+    padding: 30px 40px; 
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    max-width: 500px; 
+    width: 100%;
+    margin: 30px 0; 
+}
+
+.um-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.portal-title { 
+    font-size: 1.8em;
+    font-weight: 700;
+    color: var(--um-dark-text);
+    margin-bottom: 5px;
+}
+
+.welcome-smu {
+    font-size: 1.4em;
+    font-weight: 600;
+    color: var(--um-red); 
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.form-description {
+    font-size: 0.95em;
+    color: #666;
+    line-height: 1.4;
+    margin-bottom: 30px;
+}
+
+
+.form-group-header {
+    text-align: left;
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--um-dark-text);
+    margin-top: 25px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+    border-bottom: 2px solid var(--um-red);
+    padding-bottom: 5px;
+}
+
+
+.registration-form input:not([type="checkbox"]),
+.registration-form select {
+    width: calc(100% - 20px);
+    padding: 12px 10px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 0.95em;
+    color: var(--um-dark-text);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none; 
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.registration-form input:focus,
+.registration-form select:focus {
+    border-color: var(--um-red);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(180, 30, 52, 0.2);
+}
+
+
+.registration-form select {
+    color: #666; 
+}
+.registration-form select:valid {
+    color: var(--um-dark-text);
+}
+
+
+/* First Name / Last Name side-by-side layout */
+.name-fields {
+    display: flex;
+    gap: 10px; 
+    margin-bottom: 12px; 
+}
+
+.name-fields input {
+    flex: 1; 
+    width: auto; /* Allow flex to control width */
+}
+
+/* Register Button Styling */
+.register-button {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--um-red);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    margin-top: 30px; 
+    box-shadow: 0 4px 8px rgba(180, 30, 52, 0.4);
+}
+
+.register-button:hover {
+    background-color: var(--um-dark-red);
+    transform: translateY(-2px);
+}
+
+.register-button:active {
+    transform: translateY(0);
+}
+
+.login-link-text {
+    font-size: 0.9em;
+    color: #555;
+    margin-top: 25px;
+}
+
+.login-link-text a {
+    color: var(--um-red);
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.2s;
+}
+
+.login-link-text a:hover {
+    color: var(--um-dark-red);
+    text-decoration: underline;
+}
+
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 900px) {
+    .split-container {
+        flex-direction: column;
+    }
+
+    .left-section {
+        /* Remove diagonal shape on mobile for full width */
+        clip-path: none; 
+        min-height: 200px;
+        padding: 20px 0;
+        filter: sepia(70%) saturate(150%) hue-rotate(-25deg) brightness(60%) contrast(120%);
+    }
+    
+    .overlay {
+        clip-path: none;
+        padding-left: 0;
+        text-align: center;
+        /* Ensure text is centered on mobile */
+        justify-content: center; 
+    }
+
+    .welcome-content {
+        max-width: 80%;
+        margin: auto;
+    }
+
+    .right-section {
+        flex: none;
+        padding: 10px;
+    }
+    
+    .registration-card {
+        margin: 10px;
+        box-shadow: none; /* Less aggressive shadow on mobile */
+    }
+
+    /* Stack first/last name inputs on small screens */
+    .name-fields {
+        flex-direction: column; 
+        gap: 0;
+    }
+    .name-fields input {
+        margin-bottom: 12px; 
+    }
+    
+    .registration-card {
+        padding: 20px 25px;
+    }
+    
+    .welcome-content h1 {
+        font-size: 2em;
+    }
+    
+    .portal-title {
+        font-size: 1.5em;
+    }
+}
+
+@media (max-width: 480px) {
+    .left-section {
+        min-height: 150px;
+    }
+    
+    .welcome-content h1 {
+        font-size: 1.5em;
+    }
+    
+    .registration-card {
+        padding: 20px 15px;
+        margin: 10px 5px;
+    }
+    
+    .um-logo {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .portal-title {
+        font-size: 1.3em;
+    }
+    
+    .welcome-smu {
+        font-size: 1.2em;
+    }
+    
+    .form-group-header {
+        font-size: 1em;
+    }
+    
+    .registration-form input:not([type="checkbox"]),
+    .registration-form select {
+        padding: 10px 8px;
+        font-size: 0.9em;
+    }
+    
+    .register-button {
+        padding: 12px;
+        font-size: 1em;
+    }
+}

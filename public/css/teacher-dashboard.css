@@ -1,0 +1,266 @@
+/* Teacher Dashboard Specific Styles */
+.top-section {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    align-items: flex-start;
+}
+
+.teacher-summary-cards {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    flex: 0 0 auto;
+}
+
+.schedule-panel {
+    flex: 1;
+    min-width: 0;
+}
+
+.teacher-summary-card {
+    background-color: var(--um-red);
+    color: white;
+    border-radius: 12px;
+    padding: 48px 32px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 240px;
+    height: 269px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.teacher-summary-number {
+    font-size: 72px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1;
+}
+
+.teacher-summary-label {
+    font-size: 18px;
+    font-weight: 500;
+    opacity: 0.95;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.dashboard-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.panel-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--um-red);
+}
+
+.panel-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--um-dark-text);
+}
+
+.schedule-table,
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.schedule-table thead,
+.attendance-table thead {
+    background-color: #f3f4f6;
+}
+
+.schedule-table th,
+.schedule-table td,
+.attendance-table th,
+.attendance-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.schedule-table th,
+.attendance-table th {
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.schedule-table tbody tr:last-child td,
+.attendance-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.schedule-table tbody tr:hover,
+.attendance-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.announcements-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.announcement-item {
+    padding: 16px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.announcement-item:last-child {
+    border-bottom: none;
+}
+
+.announcement-text {
+    font-size: 14px;
+    color: var(--um-dark-text);
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.announcement-date {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.class-list-item {
+    padding: 8px 24px;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 500;
+    display: block;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.class-list-item:hover {
+    background-color: #f3f4f6;
+}
+
+.nav-item.has-children {
+    position: relative;
+}
+
+.nav-item.has-children.active {
+    background-color: transparent !important;
+    color: #111827 !important;
+}
+
+.nav-item.has-children.active > svg {
+    color: #111827 !important;
+}
+
+.nav-item.has-children:hover {
+    background-color: #f3f4f6 !important;
+    color: #111827 !important;
+}
+
+.class-list-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.nav-item.has-children.active + .class-list-container {
+    max-height: 500px;
+}
+
+.empty-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    min-height: 300px;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .top-section {
+        flex-direction: column;
+    }
+
+    .schedule-panel {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .top-section {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .teacher-summary-cards {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .teacher-summary-card {
+        width: 100%;
+        max-width: 240px;
+        height: 269px;
+        padding: 32px 24px;
+    }
+
+    .teacher-summary-number {
+        font-size: 48px;
+    }
+
+    .teacher-summary-label {
+        font-size: 16px;
+    }
+
+    .schedule-panel {
+        width: 100%;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .dashboard-panel {
+        padding: 16px;
+    }
+
+    .schedule-table,
+    .attendance-table {
+        font-size: 12px;
+    }
+
+    .schedule-table th,
+    .schedule-table td,
+    .attendance-table th,
+    .attendance-table td {
+        padding: 8px 12px;
+    }
+}
+

@@ -1,0 +1,1026 @@
+:root {
+    --um-red: #cc2128;
+    --um-dark-red: #a31a1f;
+    --um-light-gray: #f5f5f5;
+    --um-dark-text: #333;
+    --sidebar-width: 280px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    overflow-x: hidden;
+    background-color: #f8f9fa;
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+
+aside.sidebar,
+.dashboard-container .sidebar,
+.sidebar {
+    width: var(--sidebar-width) !important;
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: var(--um-dark-text) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    position: fixed !important;
+    height: 100vh !important;
+    left: 0 !important;
+    top: 0 !important;
+    overflow-y: auto !important;
+    z-index: 1000 !important;
+    border-right: 1px solid #e5e5e5 !important;
+}
+
+.sidebar .logo-container,
+.logo-container {
+    padding: 24px 20px !important;
+    border-bottom: none !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background-color: #ffffff !important;
+}
+
+.sidebar-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.sidebar .nav-menu,
+.nav-menu {
+    flex: 1 !important;
+    padding: 20px 0 !important;
+    background-color: #ffffff !important;
+}
+
+.sidebar .nav-section,
+.nav-section {
+    margin-bottom: 32px !important;
+    background-color: #ffffff !important;
+}
+
+.dashboard-container .nav-section-title {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    color: #9ca3af !important; 
+    padding: 0 24px !important;
+    margin-bottom: 12px !important;
+}
+
+.dashboard-container .nav-item {
+    display: flex !important;
+    align-items: center !important;
+    padding: 12px 24px !important;
+    color: #111827 !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+.dashboard-container .nav-item:hover {
+    background-color: #f3f4f6 !important;
+    color: #111827 !important;
+}
+
+.dashboard-container .nav-item.active {
+    background-color: var(--um-red) !important;
+    color: white !important;
+}
+
+.dashboard-container .nav-icon {
+    width: 20px !important;
+    height: 20px !important;
+    margin-right: 12px !important;
+    stroke-width: 2 !important;
+    stroke: currentColor !important;
+}
+
+
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 32px;
+    min-height: 100vh;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--um-dark-text);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    background-color: var(--um-light-gray);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--um-dark-text);
+}
+
+.user-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--um-dark-text);
+}
+
+
+.student-info-card {
+    background: transparent;
+    border-radius: 0;
+    padding: 32px;
+    margin: 0 auto 32px;
+    box-shadow: none;
+    max-width: 640px;
+    text-align: center;
+}
+
+.student-id-badge {
+    display: inline-block;
+    background-color: var(--um-red);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.student-name {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--um-dark-text);
+    margin-bottom: 8px;
+}
+
+.student-email {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.student-semester {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 16px;
+}
+
+.student-year-badge {
+    display: inline-block;
+    background-color: var(--um-red);
+    color: #ffffff;
+    padding: 10px 40px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+
+.summary-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.summary-row {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+}
+
+.summary-row .summary-card {
+    flex: 1;
+    max-width: 260px;
+}
+
+.summary-row-bottom {
+    justify-content: center;
+}
+
+.summary-row-bottom .summary-card {
+    max-width: 320px;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.summary-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--um-red);
+    margin-bottom: 8px;
+}
+
+.summary-label {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+
+.admin-summary-row {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.admin-summary-card {
+    max-width: 260px;
+    background: linear-gradient(90deg, #c81e1e, #ef4444);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    border-radius: 8px;
+    min-height: auto;
+    height: auto;
+}
+
+.admin-summary-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 16px;
+}
+
+.admin-summary-icon svg {
+    width: 32px;
+    height: 32px;
+    color: #ffffff;
+}
+
+.admin-summary-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    line-height: 1.2;
+}
+
+.admin-summary-label {
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.9;
+    margin-bottom: 4px;
+}
+
+.admin-summary-value {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* Remove arrows/steppers from admin summary cards - COMPREHENSIVE */
+.admin-summary-card * {
+    box-sizing: border-box;
+}
+
+/* Remove number input steppers */
+.admin-summary-card input[type="number"]::-webkit-inner-spin-button,
+.admin-summary-card input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+    display: none !important;
+}
+
+.admin-summary-card input[type="number"] {
+    -moz-appearance: textfield !important;
+    appearance: textfield !important;
+}
+
+/* Hide ALL pseudo-elements that might show arrows */
+.admin-summary-card *::after,
+.admin-summary-card *::before {
+    display: none !important;
+    content: none !important;
+    visibility: hidden !important;
+}
+
+/* But allow the card itself to have normal styling */
+.admin-summary-card::after,
+.admin-summary-card::before {
+    display: none !important;
+    content: none !important;
+    visibility: hidden !important;
+}
+
+/* Specifically target pseudo-elements on value and text */
+.admin-summary-card .admin-summary-value::after,
+.admin-summary-card .admin-summary-value::before,
+.admin-summary-card .admin-summary-text::after,
+.admin-summary-card .admin-summary-text::before {
+    display: none !important;
+    content: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Hide ANY button-like elements (but keep the icon) */
+.admin-summary-card button:not(.admin-summary-icon),
+.admin-summary-card [role="button"]:not(.admin-summary-icon),
+.admin-summary-card input[type="button"],
+.admin-summary-card input[type="submit"],
+.admin-summary-card [onclick] {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Hide stepper/arrow/spinner related elements */
+.admin-summary-card [class*="stepper"],
+.admin-summary-card [class*="arrow"],
+.admin-summary-card [class*="spinner"],
+.admin-summary-card [class*="increment"],
+.admin-summary-card [class*="decrement"],
+.admin-summary-card [id*="stepper"],
+.admin-summary-card [id*="arrow"],
+.admin-summary-card [id*="spinner"] {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Hide any elements that appear after the value (but not if they're part of normal structure) */
+.admin-summary-card .admin-summary-text > .admin-summary-value ~ *:not(.admin-summary-label) {
+    display: none !important;
+}
+
+/* Hide any SVG that might appear after the value within the text container */
+.admin-summary-card .admin-summary-text .admin-summary-value ~ svg,
+.admin-summary-card .admin-summary-text .admin-summary-value + svg,
+.admin-summary-card .admin-summary-value + svg,
+.admin-summary-card .admin-summary-value ~ svg {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Hide any button or clickable element after the value */
+.admin-summary-card .admin-summary-value ~ button,
+.admin-summary-card .admin-summary-value + button,
+.admin-summary-card .admin-summary-value ~ [role="button"],
+.admin-summary-card .admin-summary-value + [role="button"] {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Specifically target any element containing arrow-like content */
+.admin-summary-card [class*="up"],
+.admin-summary-card [class*="down"],
+.admin-summary-card [aria-label*="up"],
+.admin-summary-card [aria-label*="down"] {
+    display: none !important;
+}
+
+/* Ensure value text itself doesn't have any decorations */
+.admin-summary-card .admin-summary-value {
+    position: relative;
+}
+
+.admin-summary-card .admin-summary-value::after,
+.admin-summary-card .admin-summary-value::before {
+    content: none !important;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
+
+
+.admin-teacher-stats {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 24px;
+}
+
+.teacher-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    font-size: 14px;
+}
+
+.teacher-table thead {
+    background-color: #f3f4f6;
+}
+
+.teacher-table th,
+.teacher-table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.teacher-table th {
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.teacher-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.teacher-table tbody tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.assign-button,
+.change-button {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.assign-button {
+    background-color: #22c55e;
+    color: #ffffff;
+}
+
+.assign-button:hover {
+    background-color: #15803d;
+}
+
+.change-button {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+.change-button:hover {
+    background-color: #b91c1c;
+}
+
+
+.course-table-container {
+    margin-top: 24px;
+    background: transparent;
+}
+
+.course-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    font-size: 14px;
+}
+
+.course-table thead {
+    background-color: #f3f4f6;
+}
+
+.course-table th,
+.course-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.course-table th {
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.course-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.course-table tbody tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.status-yes {
+    background-color: #22c55e; 
+}
+
+.status-no {
+    background-color: #ef4444; 
+}
+
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    font-size: 14px;
+}
+
+.schedule-table thead {
+    background-color: #f3f4f6;
+}
+
+.schedule-table th,
+.schedule-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.schedule-table th {
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.schedule-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.schedule-table tbody tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.status-official {
+    background-color: #22c55e; 
+}
+
+.drop-button {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: none;
+    background-color: #ef4444;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.drop-button:hover {
+    background-color: #b91c1c;
+}
+
+
+.assessment-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    font-size: 14px;
+}
+
+.assessment-table thead {
+    background-color: #f3f4f6;
+}
+
+.assessment-table th,
+.assessment-table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.assessment-table th {
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.assessment-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.total-units-label,
+.total-assessment-label {
+    text-align: right;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.total-units-value,
+.total-assessment-value {
+    font-weight: 700;
+    color: var(--um-dark-text);
+}
+
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .main-content {
+        padding: 24px;
+    }
+    
+    .admin-teacher-stats {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .admin-summary-card {
+        max-width: 100%;
+    }
+}
+
+/* Mobile Menu Toggle Button */
+.mobile-menu-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-menu-toggle svg {
+    width: 24px;
+    height: 24px;
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 20px 16px;
+    }
+    
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        margin-top: 60px;
+    }
+    
+    .page-title {
+        font-size: 24px;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .admin-teacher-stats {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-start;
+    }
+    
+    .admin-summary-card {
+        max-width: 160px;
+        width: 160px;
+        flex: 0 0 160px;
+        min-width: 160px;
+        padding: 8px 12px;
+        min-height: auto;
+    }
+    
+    .admin-summary-icon {
+        width: 24px !important;
+        height: 24px !important;
+        margin-right: 8px !important;
+        flex-shrink: 0;
+    }
+    
+    .admin-summary-icon svg {
+        width: 24px !important;
+        height: 24px !important;
+    }
+    
+    .admin-summary-text {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .admin-summary-label {
+        font-size: 10px !important;
+        margin-bottom: 1px !important;
+        line-height: 1.1 !important;
+    }
+    
+    .admin-summary-value {
+        font-size: 16px !important;
+        line-height: 1.1 !important;
+    }
+    
+    .admin-summary-row {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-start;
+    }
+    
+    .admin-summary-row .admin-summary-card {
+        max-width: 160px;
+        width: 160px;
+        flex: 0 0 160px;
+        min-width: 160px;
+        padding: 8px 12px;
+    }
+    
+    /* Tables - horizontal scroll on mobile */
+    .course-table-container,
+    .teacher-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        min-width: 800px;
+    }
+    
+    /* Forms and modals */
+    .main-content > div[style*="display: flex"] {
+        flex-direction: column !important;
+    }
+    
+    /* Drop request card */
+    .summary-card.admin-summary-card {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+    
+    /* Button adjustments */
+    button {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+    
+    /* Modal adjustments */
+    #addSubjectModal > div,
+    #studentProfileModal > div {
+        width: 95% !important;
+        max-width: 95% !important;
+        margin: 20px auto;
+    }
+    
+    /* Search bar */
+    input[type="text"] {
+        max-width: 100% !important;
+    }
+    
+    /* Student info card */
+    .student-info-card {
+        padding: 20px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .student-name {
+        font-size: 24px !important;
+    }
+    
+    .student-email,
+    .student-semester {
+        font-size: 12px !important;
+    }
+    
+    .student-year-badge {
+        padding: 8px 20px !important;
+        font-size: 12px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 16px 12px;
+    }
+    
+    .page-title {
+        font-size: 20px;
+    }
+    
+    .content-header {
+        margin-top: 50px;
+    }
+    
+    .admin-summary-card {
+        padding: 6px 10px !important;
+        max-width: 140px !important;
+        width: 140px !important;
+        flex: 0 0 140px !important;
+        min-width: 140px !important;
+    }
+    
+    .admin-summary-icon {
+        width: 20px !important;
+        height: 20px !important;
+        margin-right: 6px !important;
+    }
+    
+    .admin-summary-icon svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+    
+    .admin-summary-label {
+        font-size: 9px !important;
+        margin-bottom: 0 !important;
+        line-height: 1 !important;
+    }
+    
+    .admin-summary-value {
+        font-size: 14px !important;
+        line-height: 1 !important;
+    }
+    
+    .admin-teacher-stats,
+    .admin-summary-row {
+        gap: 6px !important;
+    }
+    
+    .admin-teacher-stats .admin-summary-card,
+    .admin-summary-row .admin-summary-card {
+        padding: 6px 10px !important;
+        max-width: 140px !important;
+        width: 140px !important;
+        flex: 0 0 140px !important;
+        min-width: 140px !important;
+    }
+    
+    table th,
+    table td {
+        padding: 8px 10px !important;
+        font-size: 12px !important;
+    }
+    
+    button {
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+    }
+    
+    /* Modal form adjustments */
+    #addSubjectModal form > div,
+    #studentProfileModal form > div {
+        margin-bottom: 12px !important;
+    }
+    
+    #addSubjectModal form > div[style*="grid-template-columns"],
+    #studentProfileModal form > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Student info card - small mobile */
+    .student-info-card {
+        padding: 16px !important;
+    }
+    
+    .student-name {
+        font-size: 20px !important;
+    }
+    
+    .student-id-badge {
+        font-size: 11px !important;
+        padding: 5px 12px !important;   
+    }
+    
+    .student-year-badge {
+        padding: 6px 16px !important;
+        font-size: 11px !important;
+    }
+}
+@media (max-width: 768px) {
+    table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* If table is inside a container, also force scroll */
+    .table-responsive,
+    div[class*="table"],
+    div[class*="container"],
+    div {
+        overflow-x: auto;
+    }
+}
+.Enlist-button {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: none;
+    background-color: #22c55e;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
