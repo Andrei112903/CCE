@@ -29,8 +29,7 @@ Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
    
 // Admin teachers page
 Route::get('/admin/teachers', function () {
-    return view('admin.admin-teachers');
-});
+    return view('admin.admin-teachers'); });
 
 // Admin add subject page
 Route::get('/admin/add-subject', [AdminController::class, 'addSubject'])->name('admin.add-subject');
