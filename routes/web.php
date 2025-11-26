@@ -26,7 +26,7 @@ Route::middleware('auth')->group(function () {
 
 // Admin dashboard
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
-
+   
 // Admin teachers page
 Route::get('/admin/teachers', function () {
     return view('admin.admin-teachers');
