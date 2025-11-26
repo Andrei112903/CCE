@@ -3,6 +3,9 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="0">
         <title>UM Student Portal Mockup</title>
         <link rel="stylesheet" href="/css/loginstyle.css">
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -47,7 +50,7 @@
 
                     <p class="register-text">
                         If you're a new student, please create your account
-                        to access your student portal. <a href="/">Register Now</a>
+                        to access your student portal. <a href="/register">Register Now</a>
                     </p>
                     <a href="#" class="forgot-password">Forgot your Password?</a>
                 </div>

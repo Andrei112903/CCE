@@ -1,18 +1,29 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\AdminController;
 
-Route::get('/', [RegistrationController::class, 'show'])->name('register.show');
-Route::post('/register', [RegistrationController::class, 'store'])->name('register.store');
+// Teacher Login Routes
+Route::get('/teacher/login', [LoginController::class, 'showTeacherLogin'])->name('teacher.login');
+Route::post('/teacher/login', [LoginController::class, 'teacherLogin']);
 
+// Teacher Registration Routes
+Route::get('/teacher/register', [RegistrationController::class, 'showTeacherRegister'])->name('teacher.register.show');
+Route::post('/teacher/register', [RegistrationController::class, 'storeTeacher'])->name('teacher.register.store');
+
+// Student Login Routes (Default/Home Page)
+Route::get('/', [LoginController::class, 'showLogin'])->name('home');
 Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+// Student Registration Routes
+Route::get('/register', [RegistrationController::class, 'show'])->name('register.show');
+Route::post('/register', [RegistrationController::class, 'store'])->name('register.store');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

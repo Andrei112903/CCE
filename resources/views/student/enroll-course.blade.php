@@ -150,12 +150,18 @@
                             </td>
                             <td>
                                 @if($isEnrolled)
-                                    <button class="Enlist-button" disabled style="background-color: #6c757d; cursor: not-allowed; opacity: 0.6;">
+                                    <button type="button" class="Enlist-button" disabled style="background-color: #6c757d; cursor: not-allowed; opacity: 0.6;">
                                         Enrolled
                                     </button>
                                 @else
-                                    <button class="Enlist-button" 
-                                            data-title="{{ $subject->title }}">Enlist</button>
+                                    <button type="button" class="Enlist-button" 
+                                            data-title="{{ $subject->title }}"
+                                            onclick="handleEnlistClick(this, '{{ $subject->title }}')"
+                                            style="background-color: #22c55e; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; position: relative; z-index: 1;"
+                                            onmouseover="this.style.backgroundColor='#16a34a'; this.style.transform='scale(1.05)'"
+                                            onmouseout="this.style.backgroundColor='#22c55e'; this.style.transform='scale(1)'">
+                                        Enlist
+                                    </button>
                                 @endif
                             </td>
                         </tr>
@@ -259,13 +265,18 @@
 
     <script>
         // All subjects data from server
-        const allSubjects = @json($allSubjects);
+        const allSubjects = @json($allSubjects ?? []);
         
         // Enrolled subject codes (to prevent re-enrollment)
         const enrolledSubjectCodes = @json($enrolledSubjectCodes ?? []);
         
         // Enrolled schedules (to prevent schedule conflicts)
         const enrolledSchedules = @json($enrolledSchedules ?? []);
+        
+        // Debug: Log the data
+        console.log('allSubjects loaded:', Array.isArray(allSubjects) ? allSubjects.length + ' subjects' : typeof allSubjects);
+        console.log('enrolledSubjectCodes:', enrolledSubjectCodes);
+        console.log('enrolledSchedules:', enrolledSchedules);
         
         // Function to check if a schedule conflicts with enrolled schedules
         function hasScheduleConflict(schedule) {
@@ -307,17 +318,78 @@
         const confirmSchedule = document.getElementById('confirmSchedule');
         const saveEnrollmentBtn = document.getElementById('saveEnrollmentBtn');
         const removeEnrollmentBtn = document.getElementById('removeEnrollmentBtn');
-        const enlistButtons = document.querySelectorAll('.Enlist-button');
+        
+        // Check if modal elements exist
+        if (!scheduleModal || !scheduleModalTitle || !scheduleOptionsBody) {
+            console.error('Modal elements not found!');
+        }
         
         // Store selected subject data for confirmation
         let selectedSubjectData = null;
+        
+        // Direct click handler function (backup method)
+        window.handleEnlistClick = function(button, subjectTitle) {
+            console.log('handleEnlistClick called directly');
+            console.log('Button:', button);
+            console.log('Subject title:', subjectTitle);
+            
+            if (subjectTitle && subjectTitle.trim() !== '') {
+                showScheduleModal(subjectTitle);
+            } else {
+                const titleFromAttr = button.getAttribute('data-title');
+                console.log('Title from attribute:', titleFromAttr);
+                if (titleFromAttr) {
+                    showScheduleModal(titleFromAttr);
+                } else {
+                    alert('Error: Subject information not found. Please refresh the page.');
+                }
+            }
+        };
 
         // Function to show schedule selection modal
         function showScheduleModal(subjectTitle) {
+            console.log('=== showScheduleModal START ===');
+            console.log('Subject title:', subjectTitle);
+            console.log('All subjects count:', allSubjects ? allSubjects.length : 'undefined');
+            console.log('Enrolled codes:', enrolledSubjectCodes);
+            
+            if (!subjectTitle || subjectTitle.trim() === '') {
+                console.error('No subject title provided');
+                alert('Error: Subject information not found. Please try again.');
+                return;
+            }
+            
+            if (!scheduleModal || !scheduleModalTitle || !scheduleOptionsBody) {
+                console.error('Modal elements not found:', {
+                    scheduleModal: !!scheduleModal,
+                    scheduleModalTitle: !!scheduleModalTitle,
+                    scheduleOptionsBody: !!scheduleOptionsBody
+                });
+                alert('Error: Modal elements not found. Please refresh the page.');
+                return;
+            }
+            
+            // Check if allSubjects is an array
+            if (!Array.isArray(allSubjects)) {
+                console.error('allSubjects is not an array:', typeof allSubjects, allSubjects);
+                alert('Error: Subject data format is incorrect. Please refresh the page.');
+                return;
+            }
+            
+            // Check if allSubjects is empty
+            if (allSubjects.length === 0) {
+                console.warn('allSubjects array is empty');
+                alert('No subjects available for enrollment. Please contact the administrator.');
+                return;
+            }
+            
             // Find all subjects with the same title that are NOT already enrolled
             const subjectsWithSameTitle = allSubjects.filter(s => {
-                return s.title === subjectTitle && !enrolledSubjectCodes.includes(s.code);
+                return s && s.title === subjectTitle && !enrolledSubjectCodes.includes(s.code);
             });
+            
+            console.log('Found subjects with same title:', subjectsWithSameTitle.length);
+            console.log('Subjects:', subjectsWithSameTitle);
             
             if (subjectsWithSameTitle.length === 0) {
                 alert('No available schedules found for this subject. You may already be enrolled in all available schedules.');
@@ -353,7 +425,7 @@
                         <td style="padding: 12px 16px; color: #212529; font-size: 14px;">${parseFloat(subject.units || 0).toFixed(1)}</td>
                         <td style="padding: 12px 16px; color: #212529; font-size: 14px;">${subject.schedule || '-'}</td>
                         <td style="padding: 12px 16px;">
-                            <button class="Enlist-button" onclick="selectSchedule('${escapedCode}', '${escapedTitle}', ${subject.units || 0}, '${escapedSchedule}')" style="background-color: #22c55e;">Enlist</button>
+                            <button type="button" class="Enlist-button" onclick="selectSchedule('${escapedCode}', '${escapedTitle}', ${subject.units || 0}, '${escapedSchedule}')" style="background-color: #22c55e; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; cursor: pointer;">Enlist</button>
                         </td>
                     </tr>
                 `;
@@ -384,10 +456,23 @@
                 tableHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">All available schedules conflict with your current enrollments.</td></tr>';
             }
             
+            if (!scheduleOptionsBody) {
+                console.error('scheduleOptionsBody not found');
+                return;
+            }
+            
             scheduleOptionsBody.innerHTML = tableHTML;
 
             // Show modal
+            if (!scheduleModal) {
+                console.error('scheduleModal not found');
+                return;
+            }
+            
+            console.log('Showing modal...');
             scheduleModal.style.display = 'flex';
+            console.log('Modal display set to:', scheduleModal.style.display);
+            console.log('Modal element:', scheduleModal);
         }
 
         // Function to select a schedule and show confirmation
@@ -425,7 +510,11 @@
             formData.append('subject_code', selectedSubjectData.code);
             formData.append('subject_title', selectedSubjectData.title);
             formData.append('units', selectedSubjectData.units);
-            formData.append('schedule', selectedSubjectData.schedule);
+            // Send null/empty string if schedule is "-" or empty
+            const scheduleValue = (selectedSubjectData.schedule && selectedSubjectData.schedule !== '-') 
+                ? selectedSubjectData.schedule 
+                : '';
+            formData.append('schedule', scheduleValue);
             if (csrfToken) {
                 formData.append('_token', csrfToken);
             }
@@ -438,17 +527,23 @@
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
                 },
                 body: formData
             })
             .then(response => {
-                if (!response.ok) {
-                    return response.json().then(data => {
+                return response.json().then(data => {
+                    if (!response.ok) {
+                        // Handle validation errors
+                        if (data.errors) {
+                            const errorMessages = Object.values(data.errors).flat().join(', ');
+                            throw new Error(errorMessages || data.error || 'Validation failed');
+                        }
                         throw new Error(data.error || 'Server error');
-                    });
-                }
-                return response.json();
+                    }
+                    return data;
+                });
             })
             .then(data => {
                 if (data.success) {
@@ -503,25 +598,73 @@
         });
 
 
-        // Add click handlers to Enlist buttons
-        enlistButtons.forEach((button) => {
-            button.addEventListener('click', function() {
-                const subjectTitle = this.getAttribute('data-title');
-                showScheduleModal(subjectTitle);
-            });
-        });
-
-        // Close schedule modal
-        closeScheduleModal.addEventListener('click', function() {
-            scheduleModal.style.display = 'none';
-        });
-
-        // Close schedule modal when clicking outside
-        scheduleModal.addEventListener('click', function(e) {
-            if (e.target === scheduleModal) {
-                scheduleModal.style.display = 'none';
+        // Add click handlers to Enlist buttons using event delegation
+        // This ensures buttons are found even if they're dynamically added
+        console.log('Setting up Enlist button event listeners...');
+        
+        document.addEventListener('click', function(e) {
+            console.log('Click detected on:', e.target);
+            
+            // Find the closest Enlist button (in case click is on child element like text)
+            const button = e.target.closest('.Enlist-button');
+            
+            console.log('Closest button found:', button);
+            
+            // If no button found or button is disabled, skip
+            if (!button) {
+                return;
+            }
+            
+            if (button.disabled) {
+                console.log('Button is disabled, skipping');
+                return;
+            }
+            
+            // Skip if button is inside a modal
+            if (button.closest('#scheduleModal') || button.closest('#confirmModal')) {
+                console.log('Button is in modal, skipping');
+                return;
+            }
+            
+            // Check if button is in the main table (has data-title attribute)
+            if (button.hasAttribute('data-title')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const subjectTitle = button.getAttribute('data-title');
+                console.log('=== Enlist button clicked ===');
+                console.log('Subject title from button:', subjectTitle);
+                console.log('Button element:', button);
+                
+                if (subjectTitle && subjectTitle.trim() !== '') {
+                    showScheduleModal(subjectTitle);
+                } else {
+                    console.error('No data-title attribute found on button');
+                    alert('Error: Subject information not found. Please refresh the page and try again.');
+                }
+            } else {
+                console.log('Button does not have data-title attribute');
             }
         });
+        
+        console.log('Event listeners set up complete');
+
+        // Close schedule modal
+        if (closeScheduleModal) {
+            closeScheduleModal.addEventListener('click', function() {
+                if (scheduleModal) {
+                    scheduleModal.style.display = 'none';
+                }
+            });
+        }
+
+        // Close schedule modal when clicking outside
+        if (scheduleModal) {
+            scheduleModal.addEventListener('click', function(e) {
+                if (e.target === scheduleModal) {
+                    scheduleModal.style.display = 'none';
+                }
+            });
+        }
 
     </script>
 </body>

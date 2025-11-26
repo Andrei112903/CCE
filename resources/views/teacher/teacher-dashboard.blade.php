@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Teacher Portal - Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/dashboard.css">
@@ -226,7 +229,29 @@
                 }
             });
         }
-
+        
+        // Prevent back button from going to login page
+        (function() {
+            // Replace any login page in history
+            if (window.history && window.history.replaceState) {
+                // Replace current entry to prevent back navigation
+                window.history.replaceState(null, null, window.location.href);
+            }
+            
+            // Listen for back/forward button
+            window.addEventListener('popstate', function(event) {
+                // If trying to go back, push current page forward
+                if (window.location.pathname === '/teacher/login' || window.location.pathname === '/login') {
+                    window.history.pushState(null, null, '/teacher/dashboard');
+                    window.location.href = '/teacher/dashboard';
+                }
+            });
+            
+            // Push state to prevent back navigation to login
+            if (window.history && window.history.pushState) {
+                window.history.pushState(null, null, window.location.href);
+            }
+        })();
     </script>
 </body>
 </html>

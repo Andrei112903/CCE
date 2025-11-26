@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UM Student Registration Portal</title>
+    <title>UM Teacher Registration Portal</title>
     <!-- Load Tailwind CSS for utility classes -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -15,6 +15,10 @@
         
         body {
             font-family: 'Inter', sans-serif;
+        }
+        
+        .left-section {
+            background-image: url('/image/Rectangle 5.png');
         }
     </style>
     <link rel="stylesheet" href="styles.css">
@@ -35,20 +39,20 @@ Tagum Campus is a leading educational institution in the region.</p>
             </div>
         </div>
 
-        <!-- RIGHT SECTION: Student Registration Form -->
+        <!-- RIGHT SECTION: Teacher Registration Form -->
         <div class="right-section">
             <div class="registration-card">
                 <!-- Placeholder for the UM Logo -->
-                <img src="image/um-seal.png" alt="UM Logo" class="um-logo">
+                <img src="/image/um-seal.png" alt="UM Logo" class="um-logo">
                 
-                <h2 class="portal-title">Student Registration</h2>
+                <h2 class="portal-title">Teacher Registration</h2>
 
-                <h3 class="welcome-smu">Welcome, Future Student!</h3>
+                <h3 class="welcome-smu">Welcome, Future Educator!</h3>
                 <p class="form-description">
-                    Fill out the form to create your student account. Double-check your details before submitting.
+                    Fill out the form to create your teacher account. Double-check your details before submitting.
                 </p>
 
-                <form class="registration-form" method="POST" action="{{ route('register.store') }}">
+                <form class="registration-form" method="POST" action="{{ route('teacher.register.store') }}">
                     @csrf
                     
                     @if ($errors->any())
@@ -76,11 +80,10 @@ Tagum Campus is a leading educational institution in the region.</p>
                         <input type="text" name="first_name" placeholder="First Name" value="{{ old('first_name') }}" required>
                         <input type="text" name="last_name" placeholder="Last Name" value="{{ old('last_name') }}" required>
                     </div>
-                    <input type="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
+                    <input type="email" name="email" placeholder="Email Address" value="{{ old('email') }}" required>
                     <input type="password" name="password" placeholder="Password (min. 8 characters)" required>
                     <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
-                    <input type="text" name="contact" placeholder="Contact Number" value="{{ old('contact') }}" required>
-                    <input type="date" name="birthday" title="Date of Birth" value="{{ old('birthday') }}" required>
+                    <input type="text" name="mobile_number" placeholder="Mobile Number" value="{{ old('mobile_number') }}" required>
                     <select name="gender" required>
                         <option value="" disabled selected>Select Gender</option>
                         <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
@@ -91,43 +94,17 @@ Tagum Campus is a leading educational institution in the region.</p>
                     <div class="form-group-header">
                         <span class="text-2xl">🏠</span> Address Information
                     </div>
-                    <input type="text" name="street" placeholder="Street / Barangay" value="{{ old('street') }}" required>
-                    <input type="text" name="city" placeholder="City / Province" value="{{ old('city') }}" required>
-                    <input type="text" name="zip_code" placeholder="ZIP Code" value="{{ old('zip_code') }}">
-
-                    <!-- 3. EDUCATIONAL INFORMATION -->
-                    <div class="form-group-header">
-                        <span class="text-2xl">🎓</span> Educational Information
-                    </div>
-                    
-                    <!-- Select Program Dropdown -->
-                    <select name="program" required>
-                        <option value="" disabled selected>Select Program</option>
-                        <option value="BSIT" {{ old('program') == 'BSIT' ? 'selected' : '' }}>BS Information Technology</option>
-                        <option value="BSCS" {{ old('program') == 'BSCS' ? 'selected' : '' }}>BS Computer Science</option>
-                        <option value="BSEE" {{ old('program') == 'BSEE' ? 'selected' : '' }}>BS Electrical Engineering</option>
-                        <option value="BSHRM" {{ old('program') == 'BSHRM' ? 'selected' : '' }}>BS Hotel and Restaurant Management</option>
-                        <option value="BSED" {{ old('program') == 'BSED' ? 'selected' : '' }}>BSED - Secondary Education</option>
-                        <option value="BSCRIM" {{ old('program') == 'BSCRIM' ? 'selected' : '' }}>BS in Criminology</option>
-                        <option value="BSA" {{ old('program') == 'BSA' ? 'selected' : '' }}>BS in Accountancy</option>
-                        <option value="BSBA" {{ old('program') == 'BSBA' ? 'selected' : '' }}>BS in Business Administration</option>
-                    </select>
-                    
-                    <select name="year_level" required>`n                        <option value="" disabled selected>Select Year Level</option>`n                        <option value="1st Year" {{ old('year_level') == '1st Year' ? 'selected' : '' }}>1st Year</option>`n                        <option value="2nd Year" {{ old('year_level') == '2nd Year' ? 'selected' : '' }}>2nd Year</option>`n                        <option value="3rd Year" {{ old('year_level') == '3rd Year' ? 'selected' : '' }}>3rd Year</option>`n                        <option value="4th Year" {{ old('year_level') == '4th Year' ? 'selected' : '' }}>4th Year</option>`n                    </select>
-
-                    <!-- 4. PARENT/GUARDIAN INFORMATION -->
-                    <div class="form-group-header">
-                        <span class="text-2xl">👨‍👩‍👧</span> Parent/Guardian Information
-                    </div>
-                    <input type="text" name="parent_name" placeholder="Parent/Guardian Name" value="{{ old('parent_name') }}" required>
-                    <input type="text" name="parent_contact" placeholder="Parent/Guardian Contact Number" value="{{ old('parent_contact') }}" required>
+                    <input type="text" name="street" placeholder="Street" value="{{ old('street') }}">
+                    <input type="text" name="barangay" placeholder="Barangay" value="{{ old('barangay') }}">
+                    <input type="text" name="city" placeholder="City" value="{{ old('city') }}">
+                    <input type="text" name="province" placeholder="Province" value="{{ old('province') }}">
                     
                     <!-- Submit Button -->
                     <button type="submit" class="register-button">Register</button>
                 </form>
                 
                 <p class="login-link-text">
-                    Already have an account? <a href="/login">Login Here</a>
+                    Already have an account? <a href="/teacher/login">Login Here</a>
                 </p>
 
             </div>
@@ -135,3 +112,5 @@ Tagum Campus is a leading educational institution in the region.</p>
     </div>
 </body>
 </html>
+
+

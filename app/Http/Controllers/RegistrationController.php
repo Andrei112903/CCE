@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Student;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -130,5 +131,71 @@ class RegistrationController extends Controller
         }
         
         return $studentId;
+    }
+
+    /**
+     * Show the teacher registration form.
+     */
+    public function showTeacherRegister()
+    {
+        return view('teacher.teacher-register');
+    }
+
+    /**
+     * Handle teacher registration.
+     */
+    public function storeTeacher(Request $request)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email|unique:teachers,email',
+            'password' => 'required|string|min:8|confirmed',
+            'mobile_number' => 'required|string|max:20',
+            'gender' => 'required|in:Male,Female',
+            'street' => 'nullable|string|max:255',
+            'barangay' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'province' => 'nullable|string|max:255',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Create user account
+            $user = User::create([
+                'name' => $validated['first_name'] . ' ' . $validated['last_name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'role' => 'teacher',
+            ]);
+
+            // Create teacher record
+            $teacher = Teacher::create([
+                'user_id' => $user->id,
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'email' => $validated['email'],
+                'gender' => $validated['gender'],
+                'mobile_number' => $validated['mobile_number'],
+                'street' => $validated['street'] ?? null,
+                'barangay' => $validated['barangay'] ?? null,
+                'city' => $validated['city'] ?? null,
+                'province' => $validated['province'] ?? null,
+            ]);
+
+            DB::commit();
+
+            // Redirect to teacher login with success message
+            return redirect()->route('teacher.login')->with('success', 'Registration successful! Please login with your email and password.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            return back()->withInput()->withErrors([
+                'error' => 'Registration failed. Please try again. Error: ' . $e->getMessage()
+            ]);
+        }
     }
 }

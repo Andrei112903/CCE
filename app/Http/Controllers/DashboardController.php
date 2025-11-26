@@ -11,15 +11,21 @@ use App\Models\Grade;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $student = $user ? $user->student : null;
         
-        return view('student.dashboard', [
+        // Prevent caching of dashboard
+        $response = response()->view('student.dashboard', [
             'student' => $student,
             'user' => $user,
         ]);
+        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+        
+        return $response;
     }
 
     public function enrollCourse()
@@ -112,11 +118,26 @@ class DashboardController extends Controller
             return $group->first();
         })->values();
         
+        // Convert allSubjects collection to array with proper structure for JSON
+        $allSubjectsArray = $allSubjects->map(function ($subject) {
+            return [
+                'id' => $subject->id,
+                'code' => $subject->code,
+                'title' => $subject->title,
+                'description' => $subject->description,
+                'units' => $subject->units,
+                'schedule' => $subject->schedule,
+                'program' => $subject->program,
+                'year_level' => $subject->year_level,
+                'term' => $subject->term,
+            ];
+        })->values()->toArray();
+        
         return view('student.enroll-course', [
             'student' => $student,
             'user' => $user,
             'subjects' => $uniqueSubjects,
-            'allSubjects' => $allSubjects, // All subjects for schedule selection (filtered by year level)
+            'allSubjects' => $allSubjectsArray, // Convert to array for JSON encoding
             'enrolledSubjectCodes' => $enrolledSubjectCodes, // Subject codes the student is already enrolled in
             'enrolledSubjectTitles' => $enrolledSubjectTitles, // Subject titles the student is already enrolled in
             'enrolledSchedules' => $enrolledSchedules, // Schedules the student is already enrolled in (for conflict detection)
@@ -196,9 +217,10 @@ class DashboardController extends Controller
                 ], 400);
             }
 
-            // Check for schedule conflict (if schedule is provided)
-            if (!empty($validated['schedule'])) {
-                $newSchedule = trim($validated['schedule']);
+            // Check for schedule conflict (if schedule is provided and not empty)
+            $schedule = $validated['schedule'] ?? null;
+            if ($schedule && $schedule !== '' && $schedule !== '-' && trim($schedule) !== '') {
+                $newSchedule = trim($schedule);
                 
                 // Get all current enrollments with schedules (excluding approved drop requests)
                 $approvedDropCodes = DropRequest::where('student_id', $student->id)
@@ -209,6 +231,7 @@ class DashboardController extends Controller
                 $conflictingEnrollment = StudentEnrollment::where('student_id', $student->id)
                     ->whereNotNull('schedule')
                     ->where('schedule', '!=', '')
+                    ->where('schedule', '!=', '-')
                     ->whereNotIn('subject_code', $approvedDropCodes)
                     ->where('schedule', $newSchedule)
                     ->first();
@@ -222,12 +245,18 @@ class DashboardController extends Controller
             }
 
             // Create enrollment
+            // Convert empty string or "-" to null for schedule
+            $schedule = $validated['schedule'] ?? null;
+            if ($schedule === '' || $schedule === '-' || trim($schedule) === '') {
+                $schedule = null;
+            }
+            
             $enrollment = StudentEnrollment::create([
                 'student_id' => $student->id,
                 'subject_code' => $validated['subject_code'],
                 'subject_title' => $validated['subject_title'],
                 'units' => $validated['units'],
-                'schedule' => $validated['schedule'] ?? null,
+                'schedule' => $schedule,
             ]);
 
             return response()->json([
