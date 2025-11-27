@@ -65,3 +65,11 @@ Route::get('/teacher/class-list', function () {
 Route::get('/teacher/profile', function () {
     return view('teacher.teacher-profile');
 });
+// Teacher login page 
+Route::get('/teacher/login', function () {
+    return view('teacher.teacher-login-blade');
+});
+
+Route::get('/teacher/registration', function () {
+    return view('teacher.teacher-registration-blade');
+});
