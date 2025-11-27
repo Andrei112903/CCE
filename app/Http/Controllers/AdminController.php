@@ -92,6 +92,7 @@ class AdminController extends Controller
             'year_level' => 'nullable|string|max:255',
             'term' => 'nullable|string|max:255',
             'schedule' => 'nullable|string|max:255',
+            'room' => 'nullable|string|max:255',
         ]);
 
         Subject::create($validated);
@@ -130,6 +131,7 @@ class AdminController extends Controller
             'year_level' => 'nullable|string|max:255',
             'term' => 'nullable|string|max:255',
             'schedule' => 'nullable|string|max:255',
+            'room' => 'nullable|string|max:255',
         ]);
 
         $subject->update($validated);
@@ -259,5 +261,54 @@ class AdminController extends Controller
             return redirect()->route('admin.student-management')
                 ->with('error', 'Failed to delete student. Please try again.');
         }
+    }
+
+    /**
+     * Display the teachers management page.
+     */
+    public function teachers()
+    {
+        // Get all teachers from database
+        $teachers = Teacher::with('user')->orderBy('created_at', 'desc')->get();
+        
+        // Get all subjects with their assigned teachers
+        $subjects = Subject::with('teacher')->orderBy('code')->get();
+        
+        // Count total teachers
+        $totalTeachers = Teacher::count();
+        
+        // Count unassigned teachers (teachers not assigned to any subject)
+        $assignedTeacherIds = Subject::whereNotNull('teacher_id')
+            ->distinct()
+            ->pluck('teacher_id')
+            ->toArray();
+        
+        $unassignedTeachers = Teacher::whereNotIn('id', $assignedTeacherIds)->count();
+        
+        return view('admin.admin-teachers', [
+            'teachers' => $teachers,
+            'subjects' => $subjects,
+            'totalTeachers' => $totalTeachers,
+            'unassignedTeachers' => $unassignedTeachers,
+        ]);
+    }
+
+    /**
+     * Assign a teacher to a subject.
+     */
+    public function assignTeacherToSubject(Request $request, $id)
+    {
+        $subject = Subject::findOrFail($id);
+        
+        $validated = $request->validate([
+            'teacher_id' => 'nullable|exists:teachers,id',
+        ]);
+        
+        $subject->update([
+            'teacher_id' => $validated['teacher_id'] ?? null,
+        ]);
+        
+        return redirect()->route('admin.teachers')
+            ->with('success', 'Teacher assignment updated successfully!');
     }
 }

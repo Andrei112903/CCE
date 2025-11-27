@@ -133,6 +133,7 @@
                             <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Units</th>
                             <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Term</th>
                             <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Schedule</th>
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Room</th>
                             <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Action</th>
                         </tr>
                     </thead>
@@ -146,6 +147,7 @@
                             <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ number_format($subject->units, 1) }}</td>
                             <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $subject->term ?? '-' }}</td>
                             <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $subject->schedule ?? '-' }}</td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $subject->room ?? '-' }}</td>
                             <td style="padding: 12px 16px;">
                                 <button class="edit-subject-btn" 
                                     data-id="{{ $subject->id }}"
@@ -157,6 +159,7 @@
                                     data-year-level="{{ $subject->year_level ?? '' }}"
                                     data-term="{{ $subject->term ?? '' }}"
                                     data-schedule="{{ $subject->schedule ?? '' }}"
+                                    data-room="{{ $subject->room ?? '' }}"
                                     style="background-color: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer; margin-right: 8px; font-family: 'Inter', sans-serif;">Edit</button>
                                 <form method="POST" action="{{ route('admin.subjects.delete', $subject->id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this subject?');">
                                     @csrf
@@ -167,7 +170,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" style="padding: 40px 16px; text-align: center; color: #6c757d; font-size: 14px;">
+                            <td colspan="9" style="padding: 40px 16px; text-align: center; color: #6c757d; font-size: 14px;">
                                 No subjects added yet. Click "Add Subject" to create one.
                             </td>
                         </tr>
@@ -273,9 +276,15 @@
                     </div>
                     
                     
-                    <div style="margin-bottom: 24px;">
+                    <div style="margin-bottom: 16px;">
                         <label style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; color: #495057; font-family: 'Inter', sans-serif;">Schedule</label>
                         <input type="text" name="schedule" value="{{ old('schedule') }}" placeholder="e.g., M-SAT1, M-SAT" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; font-family: 'Inter', sans-serif; box-sizing: border-box;">
+                    </div>
+                    
+                    
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; color: #495057; font-family: 'Inter', sans-serif;">Room</label>
+                        <input type="text" name="room" value="{{ old('room') }}" placeholder="e.g., Room 101, Lab 205" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; font-family: 'Inter', sans-serif; box-sizing: border-box;">
                     </div>
                     
                     
@@ -371,9 +380,15 @@
                     </div>
                     
                     
-                    <div style="margin-bottom: 24px;">
+                    <div style="margin-bottom: 16px;">
                         <label style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; color: #495057; font-family: 'Inter', sans-serif;">Schedule</label>
                         <input type="text" id="edit-schedule" name="schedule" placeholder="e.g., M-SAT1, M-SAT" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; font-family: 'Inter', sans-serif; box-sizing: border-box;">
+                    </div>
+                    
+                    
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; color: #495057; font-family: 'Inter', sans-serif;">Room</label>
+                        <input type="text" id="edit-room" name="room" placeholder="e.g., Room 101, Lab 205" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; font-family: 'Inter', sans-serif; box-sizing: border-box;">
                     </div>
                     
                     
@@ -444,6 +459,7 @@
                 document.getElementById('edit-year-level').value = this.getAttribute('data-year-level') || '';
                 document.getElementById('edit-term').value = this.getAttribute('data-term') || '';
                 document.getElementById('edit-schedule').value = this.getAttribute('data-schedule') || '';
+                document.getElementById('edit-room').value = this.getAttribute('data-room') || '';
                 
                 // Show edit modal
                 editModal.style.display = 'flex';

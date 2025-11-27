@@ -7,6 +7,69 @@
     <title>Student Portal - Grades</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+        .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            font-size: 14px;
+        }
+
+        .grades-table thead {
+            background-color: #f3f4f6;
+        }
+
+        .grades-table th,
+        .grades-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .grades-table th {
+            font-weight: 600;
+            color: #4b5563;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .grades-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .grades-table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .grades-table tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        .grade-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        @media (max-width: 768px) {
+            .grades-table {
+                font-size: 12px;
+            }
+
+            .grades-table th,
+            .grades-table td {
+                padding: 10px 12px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
@@ -89,15 +152,14 @@
 
                 <div class="table-container">
                     @if(count($enrollmentsWithGrades) > 0)
-                        <table class="data-table">
+                        <table class="grades-table">
                             <thead>
                                 <tr>
                                     <th>Subject Code</th>
                                     <th>Subject Title</th>
+                                    <th>Description</th>
                                     <th>Units</th>
-                                    <th>Midterm Grade</th>
                                     <th>Final Grade</th>
-                                    <th>Overall Grade</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -105,44 +167,27 @@
                                     @php
                                         $enrollment = $item['enrollment'];
                                         $grades = $item['grades'];
+                                        $subject = $item['subject'] ?? null;
                                         
-                                        // Get specific grade types
-                                        $midtermGrade = $grades->where('type', 'Midterm')->first();
-                                        $finalGrade = $grades->where('type', 'Final')->first();
-                                        
-                                        // Calculate overall grade (average of midterm and final if both exist)
-                                        $overallGrade = null;
-                                        if ($midtermGrade && $finalGrade && $midtermGrade->grade !== null && $finalGrade->grade !== null) {
-                                            $overallGrade = ($midtermGrade->grade + $finalGrade->grade) / 2;
-                                        } elseif ($finalGrade && $finalGrade->grade !== null) {
-                                            $overallGrade = $finalGrade->grade;
-                                        } elseif ($midtermGrade && $midtermGrade->grade !== null) {
-                                            $overallGrade = $midtermGrade->grade;
-                                        }
+                                        // Get final grade (type is "Final Grade")
+                                        $finalGrade = $grades->where('type', 'Final Grade')->first();
                                     @endphp
                                     <tr>
-                                        <td>{{ $enrollment->subject_code }}</td>
-                                        <td>{{ $enrollment->subject_title }}</td>
-                                        <td>{{ number_format($enrollment->units, 1) }}</td>
-                                        <td>
-                                            @if($midtermGrade && $midtermGrade->grade !== null)
-                                                {{ number_format($midtermGrade->grade, 2) }}
+                                        <td style="font-weight: 500; color: #212529;">{{ $enrollment->subject_code }}</td>
+                                        <td style="color: #212529;">{{ $enrollment->subject_title }}</td>
+                                        <td style="color: #6c757d; max-width: 300px;">
+                                            @if($subject && $subject->description)
+                                                {{ trim(str_replace([$enrollment->subject_code, $enrollment->subject_title], '', $subject->description)) ?: $subject->description }}
                                             @else
-                                                <span style="color: #6c757d;">-</span>
+                                                <span style="color: #9ca3af; font-style: italic;">No description</span>
                                             @endif
                                         </td>
+                                        <td style="color: #6c757d;">{{ number_format($enrollment->units, 1) }}</td>
                                         <td>
                                             @if($finalGrade && $finalGrade->grade !== null)
-                                                {{ number_format($finalGrade->grade, 2) }}
+                                                <span class="grade-value">{{ number_format((float)$finalGrade->grade, 1, '.', '') }}</span>
                                             @else
-                                                <span style="color: #6c757d;">-</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($overallGrade !== null)
-                                                <strong>{{ number_format($overallGrade, 2) }}</strong>
-                                            @else
-                                                <span style="color: #6c757d;">-</span>
+                                                <span style="color: #9ca3af; font-style: italic;">No grade yet</span>
                                             @endif
                                         </td>
                                     </tr>

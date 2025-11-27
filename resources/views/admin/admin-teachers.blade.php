@@ -86,7 +86,7 @@
         <main class="main-content">
             
             <header class="content-header">
-                <h1 class="page-title">Admin</h1>
+                <h1 class="page-title">Teachers Management</h1>
                 <div class="user-info">
                     <div class="user-icon">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,6 +98,18 @@
             </header>
 
             
+            @if (session('success'))
+                <div style="background-color: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb; font-size: 14px; font-family: 'Inter', sans-serif;">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div style="background-color: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb; font-size: 14px; font-family: 'Inter', sans-serif;">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <div class="admin-teacher-stats">
                 <div class="summary-card admin-summary-card">
                     <div class="admin-summary-icon">
@@ -107,7 +119,7 @@
                     </div>
                     <div class="admin-summary-text">
                         <div class="admin-summary-label">Total Teachers</div>
-                        <div class="admin-summary-value">4</div>
+                        <div class="admin-summary-value">{{ $totalTeachers }}</div>
                     </div>
                 </div>
 
@@ -119,7 +131,7 @@
                     </div>
                     <div class="admin-summary-text">
                         <div class="admin-summary-label">Unassigned Teachers</div>
-                        <div class="admin-summary-value">2</div>
+                        <div class="admin-summary-value">{{ $unassignedTeachers }}</div>
                     </div>
                 </div>
             </div>
@@ -137,38 +149,61 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @forelse($subjects as $subject)
                         <tr>
-                            <td>2019</td>
-                            <td>IT 11</td>
-                            <td>3.0</td>
-                            <td>Not Assigned</td>
-                            <td><button class="assign-button">Assign</button></td>
+                            <td>{{ $subject->code }}</td>
+                            <td>{{ $subject->title }}</td>
+                            <td>{{ $subject->units }}</td>
+                            <td>
+                                @if($subject->teacher)
+                                    {{ $subject->teacher->first_name }} {{ $subject->teacher->last_name }}
+                                @else
+                                    <span style="color: #6c757d;">Not Assigned</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($subject->teacher)
+                                    <button class="change-button" onclick="assignTeacher({{ $subject->id }}, '{{ $subject->code }}', '{{ $subject->title }}', {{ $subject->teacher_id }})">Change</button>
+                                @else
+                                    <button class="assign-button" onclick="assignTeacher({{ $subject->id }}, '{{ $subject->code }}', '{{ $subject->title }}', null)">Assign</button>
+                                @endif
+                            </td>
                         </tr>
+                        @empty
                         <tr>
-                            <td>2088</td>
-                            <td>IT 13</td>
-                            <td>3.0</td>
-                            <td>Not Assigned</td>
-                            <td><button class="assign-button">Assign</button></td>
+                            <td colspan="5" style="padding: 40px 16px; text-align: center; color: #6c757d; font-size: 14px;">
+                                No subjects found.
+                            </td>
                         </tr>
-                        <tr>
-                            <td>2087</td>
-                            <td>CCE 103</td>
-                            <td>3.0</td>
-                            <td>Mr. Nino Barba</td>
-                            <td><button class="change-button">Change</button></td>
-                        </tr>
-                        <tr>
-                            <td>2076</td>
-                            <td>IT 09</td>
-                            <td>3.0</td>
-                            <td>Mrs. Ramos</td>
-                            <td><button class="change-button">Change</button></td>
-                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
         </main>
+    </div>
+
+    <!-- Assign Teacher Modal -->
+    <div id="assignTeacherModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 8px; width: 90%; max-width: 500px; padding: 24px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <h2 style="margin: 0 0 20px 0; font-size: 20px; font-weight: 600; color: #212529; font-family: 'Inter', sans-serif;">Assign Teacher</h2>
+            <p style="margin: 0 0 20px 0; font-size: 14px; color: #6c757d; font-family: 'Inter', sans-serif;">
+                Subject: <strong id="modalSubjectCode"></strong> - <strong id="modalSubjectTitle"></strong>
+            </p>
+            <form id="assignTeacherForm" method="POST">
+                @csrf
+                <input type="hidden" name="subject_id" id="modalSubjectId">
+                <select name="teacher_id" id="modalTeacherId" style="width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; font-family: 'Inter', sans-serif; margin-bottom: 20px;" required>
+                    <option value="">Select a teacher...</option>
+                    @foreach($teachers as $teacher)
+                        <option value="{{ $teacher->id }}">{{ $teacher->first_name }} {{ $teacher->last_name }} ({{ $teacher->email }})</option>
+                    @endforeach
+                </select>
+                <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                    <button type="button" onclick="closeAssignModal()" style="background-color: white; color: #212529; border: 1px solid #ced4da; padding: 10px 20px; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">Cancel</button>
+                    <button type="submit" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">Assign</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -190,6 +225,35 @@
                 }
             });
         }
+        
+        // Assign Teacher functionality
+        function assignTeacher(subjectId, subjectCode, subjectTitle, currentTeacherId) {
+            const modal = document.getElementById('assignTeacherModal');
+            const form = document.getElementById('assignTeacherForm');
+            const subjectIdInput = document.getElementById('modalSubjectId');
+            const teacherSelect = document.getElementById('modalTeacherId');
+            const subjectCodeSpan = document.getElementById('modalSubjectCode');
+            const subjectTitleSpan = document.getElementById('modalSubjectTitle');
+            
+            subjectIdInput.value = subjectId;
+            subjectCodeSpan.textContent = subjectCode;
+            subjectTitleSpan.textContent = subjectTitle;
+            teacherSelect.value = currentTeacherId || '';
+            form.action = '/admin/subjects/' + subjectId + '/assign-teacher';
+            
+            modal.style.display = 'flex';
+        }
+        
+        function closeAssignModal() {
+            document.getElementById('assignTeacherModal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('assignTeacherModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAssignModal();
+            }
+        });
         
         // Remove arrows/steppers from admin summary cards
         document.addEventListener('DOMContentLoaded', function() {

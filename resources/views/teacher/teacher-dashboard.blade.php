@@ -79,7 +79,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </div>
-                    <span class="user-name">{{ Auth::user()->name ?? 'Teacher' }}</span>
+                    <span class="user-name">{{ isset($teacher) && $teacher ? ($teacher->first_name . ' ' . $teacher->last_name) : (isset($user) ? $user->name : 'Teacher') }}</span>
                     <form method="POST" action="/logout" style="display: inline; margin-left: 12px;">
                         @csrf
                         <button type="submit" style="padding: 6px 12px; border-radius: 999px; border: none; background-color: rgba(217, 0, 0, 0.77); color: #ffffff; font-size: 12px; font-weight: 600; cursor: pointer">Logout</button>

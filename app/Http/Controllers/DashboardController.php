@@ -348,9 +348,13 @@ class DashboardController extends Controller
             foreach ($enrollments as $enrollment) {
                 // Skip subjects with approved drop requests
                 if (!in_array($enrollment->subject_code, $approvedDropCodes)) {
+                    // Get subject details including description
+                    $subject = Subject::where('code', $enrollment->subject_code)->first();
+                    
                     $enrollmentsWithGrades[] = [
                         'enrollment' => $enrollment,
                         'grades' => $enrollment->grades,
+                        'subject' => $subject,
                     ];
                 }
             }

@@ -80,6 +80,8 @@
             cursor: pointer;
             font-family: 'Inter', sans-serif;
             transition: background-color 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .view-btn:hover {
@@ -198,7 +200,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </div>
-                    <span class="user-name">Ninfuy</span>
+                    <span class="user-name">{{ $user->name ?? ($teacher->first_name ?? 'Teacher') }}</span>
                 </div>
             </header>
 
@@ -211,48 +213,63 @@
                     <h2 class="class-list-title">Class List</h2>
                 </div>
 
+                <!-- Filter Section -->
+                <div style="margin-bottom: 20px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <form method="GET" action="{{ route('teacher.class-list') }}" style="display: flex; gap: 8px; align-items: center; flex: 1; min-width: 250px;">
+                        <input 
+                            type="text" 
+                            name="filter_code" 
+                            placeholder="Filter by Subject Code (e.g., 1297)" 
+                            value="{{ $filterCode ?? '' }}"
+                            style="flex: 1; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;"
+                        >
+                        <button 
+                            type="submit" 
+                            style="padding: 8px 16px; background-color: #BC0000; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;"
+                        >
+                            Search
+                        </button>
+                        @if(!empty($filterCode))
+                        <a 
+                            href="{{ route('teacher.class-list') }}" 
+                            style="padding: 8px 16px; background-color: #6c757d; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; font-family: 'Inter', sans-serif;"
+                        >
+                            Clear
+                        </a>
+                        @endif
+                    </form>
+                </div>
+
                 <table class="class-list-table">
                     <thead>
                         <tr>
                             <th>Subject</th>
                             <th>Code</th>
+                            <th>Description</th>
                             <th>No. of Student</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @forelse($subjectsWithCounts as $item)
                         <tr>
-                            <td>IT 13</td>
-                            <td>2083</td>
-                            <td>40</td>
+                            <td>{{ $item['subject']->title }}</td>
+                            <td>{{ $item['subject']->code }}</td>
+                            <td style="color: #6c757d; max-width: 300px;">
+                                {{ $item['subject']->description ?? 'No description' }}
+                            </td>
+                            <td>{{ $item['student_count'] }}</td>
                             <td>
-                                <button class="view-btn">View</button>
+                                <a href="{{ route('teacher.class-details', $item['subject']->id) }}" class="view-btn" style="text-decoration: none; display: inline-block;">View</a>
                             </td>
                         </tr>
+                        @empty
                         <tr>
-                            <td>CCE 104</td>
-                            <td>2064</td>
-                            <td>35</td>
-                            <td>
-                                <button class="view-btn">View</button>
+                            <td colspan="5" style="text-align: center; padding: 24px; color: #6c757d;">
+                                No subjects assigned yet.
                             </td>
                         </tr>
-                        <tr>
-                            <td>CCE 103</td>
-                            <td>2007</td>
-                            <td>42</td>
-                            <td>
-                                <button class="view-btn">View</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Physics</td>
-                            <td>2093</td>
-                            <td>34</td>
-                            <td>
-                                <button class="view-btn">View</button>
-                            </td>
-                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
