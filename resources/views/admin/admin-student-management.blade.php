@@ -108,6 +108,18 @@
                 </button>
             </form>
 
+            @if (session('success'))
+                <div style="background-color: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb; font-size: 14px; font-family: 'Inter', sans-serif;">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div style="background-color: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb; font-size: 14px; font-family: 'Inter', sans-serif;">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             
             <div class="course-table-container">
                 <table class="teacher-table" style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
@@ -137,11 +149,19 @@
                             </td>
                             
                             <td style="padding: 12px 16px;">
-                                <button class="view-btn" 
-                                    data-student='{"id":"{{ $student->student_id }}","name":"{{ $student->first_name }} {{ $student->last_name }}","gender":"{{ $student->gender }}","birthday":"{{ $student->birthday->format('F d, Y') }}","contact":"{{ $student->contact }}","email":"{{ $student->email }}","address":"{{ $student->address }}","grade":"{{ $student->grade_level }}","parent":"{{ $student->parent_name }}","parentContact":"{{ $student->parent_contact }}"}'
-                                    style="background-color: #28a745; color: white; border: none; padding: 6px 16px; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">
-                                    View
-                                </button>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="view-btn" 
+                                        data-student='{"id":"{{ $student->student_id }}","name":"{{ $student->first_name }} {{ $student->last_name }}","gender":"{{ $student->gender }}","birthday":"{{ $student->birthday->format('F d, Y') }}","contact":"{{ $student->contact }}","email":"{{ $student->email }}","address":"{{ $student->address }}","grade":"{{ $student->grade_level }}","parent":"{{ $student->parent_name }}","parentContact":"{{ $student->parent_contact }}"}'
+                                        style="background-color: #28a745; color: white; border: none; padding: 6px 16px; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">
+                                        View
+                                    </button>
+                                    <button class="remove-btn" 
+                                        data-student-id="{{ $student->id }}"
+                                        data-student-name="{{ $student->first_name }} {{ $student->last_name }}"
+                                        style="background-color: #dc3545; color: white; border: none; padding: 6px 16px; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">
+                                        Remove
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         @empty
@@ -288,6 +308,39 @@
            
             alert('Assignment saved successfully!');
             modal.style.display = 'none';
+        });
+
+        // Remove student functionality
+        const removeButtons = document.querySelectorAll('.remove-btn');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const studentId = this.getAttribute('data-student-id');
+                const studentName = this.getAttribute('data-student-name');
+                
+                if (confirm(`Are you sure you want to remove ${studentName}? This action cannot be undone and will delete all associated records (enrollments, drop requests, and user account).`)) {
+                    // Create a form to submit DELETE request
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/admin/students/${studentId}`;
+                    
+                    // Add CSRF token
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfInput);
+                    
+                    // Add method spoofing for DELETE
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'DELETE';
+                    form.appendChild(methodInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
         });
         
         // Mobile menu toggle

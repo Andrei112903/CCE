@@ -144,13 +144,16 @@ input[type="text"], input[type="password"] {
 
 .forgot-password {
     display: block;
-    margin-top: 10px;
-    color: blue;
+    margin-top: 15px;
+    color: var(--um-red);
     font-size: 0.9em;
     text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
 }
 
 .forgot-password:hover {
+    color: var(--um-dark-red);
     text-decoration: underline;
 }
 

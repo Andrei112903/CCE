@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PasswordResetController;
 
 // Teacher Login Routes
 Route::get('/teacher/login', [LoginController::class, 'showTeacherLogin'])->name('teacher.login');
@@ -24,6 +25,12 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::get('/register', [RegistrationController::class, 'show'])->name('register.show');
 Route::post('/register', [RegistrationController::class, 'store'])->name('register.store');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Password Reset Routes
+Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -52,6 +59,7 @@ Route::delete('/admin/subjects/{id}', [AdminController::class, 'deleteSubject'])
 
 
 Route::get('/admin/student-management', [AdminController::class, 'studentManagement'])->name('admin.student-management');
+Route::delete('/admin/students/{id}', [AdminController::class, 'deleteStudent'])->name('admin.students.delete');
 
 
 Route::get('/admin/drop-request-list', [AdminController::class, 'dropRequestList'])->name('admin.drop-request-list');

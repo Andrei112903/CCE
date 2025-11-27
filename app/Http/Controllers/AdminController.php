@@ -8,7 +8,9 @@ use App\Models\Teacher;
 use App\Models\User;
 use App\Models\DropRequest;
 use App\Models\StudentEnrollment;
+use App\Models\Grade;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -194,5 +196,68 @@ class AdminController extends Controller
 
         return redirect()->route('admin.drop-request-list')
             ->with('success', 'Drop request rejected successfully!');
+    }
+
+    /**
+     * Delete a student and their associated user account.
+     * This method completely removes the student and all related data from the database.
+     */
+    public function deleteStudent($id)
+    {
+        $student = Student::findOrFail($id);
+        
+        // Get the user ID and email before deleting the student
+        $userId = $student->user_id;
+        $userEmail = $student->email;
+        
+        // Start database transaction to ensure all deletions succeed or none do
+        DB::beginTransaction();
+        
+        try {
+            // Delete related records first
+            // Get enrollments to delete associated grades
+            $enrollments = StudentEnrollment::where('student_id', $student->student_id)->get();
+            
+            // Delete grades associated with enrollments
+            foreach ($enrollments as $enrollment) {
+                Grade::where('student_enrollment_id', $enrollment->id)->delete();
+            }
+            
+            // Delete student enrollments
+            StudentEnrollment::where('student_id', $student->student_id)->delete();
+            
+            // Delete drop requests
+            DropRequest::where('student_id', $student->student_id)->delete();
+            
+            // Delete the student record
+            $student->delete();
+            
+            // Delete the associated user account and all related authentication data
+            if ($userId) {
+                // Delete user sessions
+                DB::table('sessions')->where('user_id', $userId)->delete();
+                
+                // Delete password reset tokens for this user's email
+                if ($userEmail) {
+                    DB::table('password_reset_tokens')->where('email', $userEmail)->delete();
+                }
+                
+                // Delete the user account from users table
+                User::where('id', $userId)->delete();
+            }
+            
+            // Commit all deletions
+            DB::commit();
+            
+            return redirect()->route('admin.student-management')
+                ->with('success', 'Student account and all related data have been completely removed from the database.');
+                
+        } catch (\Exception $e) {
+            // Rollback if any error occurs
+            DB::rollBack();
+            
+            return redirect()->route('admin.student-management')
+                ->with('error', 'Failed to delete student. Please try again.');
+        }
     }
 }

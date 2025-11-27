@@ -52,7 +52,7 @@
                         If you're a new student, please create your account
                         to access your student portal. <a href="/register">Register Now</a>
                     </p>
-                    <a href="#" class="forgot-password">Forgot your Password?</a>
+                    <a href="{{ route('password.request', ['type' => 'student']) }}" class="forgot-password">Forgot your Password?</a>
                 </div>
             </div>
         </div>
