@@ -59,6 +59,18 @@
        
         <main class="main-content">
             
+            @if (session('success'))
+                <div style="background-color: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb; font-size: 14px; font-family: 'Inter', sans-serif;">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div style="background-color: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb; font-size: 14px; font-family: 'Inter', sans-serif;">
+                    {{ session('error') }}
+                </div>
+            @endif
+            
             <header class="content-header">
                 <h1 class="page-title">Teacher Portal</h1>
                 <div class="user-info">
@@ -67,7 +79,11 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </div>
-                    <span class="user-name">Ninfuy</span>
+                    <span class="user-name">{{ Auth::user()->name ?? 'Teacher' }}</span>
+                    <form method="POST" action="/logout" style="display: inline; margin-left: 12px;">
+                        @csrf
+                        <button type="submit" style="padding: 6px 12px; border-radius: 999px; border: none; background-color: rgba(217, 0, 0, 0.77); color: #ffffff; font-size: 12px; font-weight: 600; cursor: pointer">Logout</button>
+                    </form>
                 </div>
             </header>
 

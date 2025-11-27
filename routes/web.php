@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RegistrationController;
@@ -32,14 +33,72 @@ Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkE
 Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 
+// Student Routes (Protected - requires authentication and student role)
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/enroll-course', [DashboardController::class, 'enrollCourse'])->name('enroll-course');
-    Route::post('/enroll-subject', [DashboardController::class, 'enrollSubject'])->name('enroll-subject');
-    Route::get('/class-schedule', [DashboardController::class, 'classSchedule'])->name('class-schedule');
-    Route::get('/grades', [DashboardController::class, 'grades'])->name('grades');
-    Route::get('/assessment', [DashboardController::class, 'assessment'])->name('assessment');
-    Route::post('/drop-request', [DashboardController::class, 'submitDropRequest'])->name('drop-request.submit');
+    Route::get('/dashboard', function (Request $request) {
+        $user = Auth::user();
+        // Ensure only students can access student dashboard
+        if ($user->role !== 'student') {
+            if ($user->role === 'teacher') {
+                return redirect('/teacher/dashboard')->with('error', 'Teachers cannot access student portal.');
+            } elseif ($user->role === 'admin') {
+                return redirect('/admin/dashboard')->with('error', 'Admins cannot access student portal.');
+            }
+            return redirect('/')->with('error', 'Access denied.');
+        }
+        return app(DashboardController::class)->index($request);
+    })->name('dashboard');
+    
+    Route::get('/enroll-course', function (Request $request) {
+        $user = Auth::user();
+        if ($user->role !== 'student') {
+            if ($user->role === 'teacher') {
+                return redirect('/teacher/dashboard');
+            }
+            return redirect('/')->with('error', 'Access denied.');
+        }
+        return app(DashboardController::class)->enrollCourse();
+    })->name('enroll-course');
+    
+    Route::post('/enroll-subject', function (Request $request) {
+        $user = Auth::user();
+        if ($user->role !== 'student') {
+            return redirect('/')->with('error', 'Access denied.');
+        }
+        return app(DashboardController::class)->enrollSubject($request);
+    })->name('enroll-subject');
+    
+    Route::get('/class-schedule', function (Request $request) {
+        $user = Auth::user();
+        if ($user->role !== 'student') {
+            return redirect('/')->with('error', 'Access denied.');
+        }
+        return app(DashboardController::class)->classSchedule();
+    })->name('class-schedule');
+    
+    Route::get('/grades', function (Request $request) {
+        $user = Auth::user();
+        if ($user->role !== 'student') {
+            return redirect('/')->with('error', 'Access denied.');
+        }
+        return app(DashboardController::class)->grades();
+    })->name('grades');
+    
+    Route::get('/assessment', function (Request $request) {
+        $user = Auth::user();
+        if ($user->role !== 'student') {
+            return redirect('/')->with('error', 'Access denied.');
+        }
+        return app(DashboardController::class)->assessment();
+    })->name('assessment');
+    
+    Route::post('/drop-request', function (Request $request) {
+        $user = Auth::user();
+        if ($user->role !== 'student') {
+            return redirect('/')->with('error', 'Access denied.');
+        }
+        return app(DashboardController::class)->submitDropRequest($request);
+    })->name('drop-request.submit');
 });
 
 
@@ -72,16 +131,41 @@ Route::get('/admin/grades', function () {
 });
 
 
-Route::get('/teacher/dashboard', function () {
-    return view('teacher.teacher-dashboard');
+// Teacher Routes (Protected - requires authentication and teacher role)
+Route::middleware('auth')->group(function () {
+    Route::get('/teacher/dashboard', function () {
+        $user = Auth::user();
+        
+        // Ensure only teachers can access
+        if (!$user || $user->role !== 'teacher') {
+            if ($user && $user->role === 'student') {
+                return redirect('/dashboard')->with('error', 'Students cannot access teacher portal.');
+            } elseif ($user && $user->role === 'admin') {
+                return redirect('/admin/dashboard')->with('error', 'Admins cannot access teacher portal.');
+            }
+            Auth::logout();
+            return redirect('/teacher/login')->with('error', 'Access denied. Teacher account required.');
+        }
+        
+        return view('teacher.teacher-dashboard', [
+            'user' => $user
+        ]);
+    })->name('teacher.dashboard');
+
+    Route::get('/teacher/class-list', function () {
+        $user = Auth::user();
+        if ($user->role !== 'teacher') {
+            return redirect('/')->with('error', 'Access denied.');
+        }
+        return view('teacher.teacher-class-list');
+    });
+
+    Route::get('/teacher/profile', function () {
+        $user = Auth::user();
+        if ($user->role !== 'teacher') {
+            return redirect('/')->with('error', 'Access denied.');
+        }
+        return view('teacher.teacher-profile');
+    });
 });
 
-
-Route::get('/teacher/class-list', function () {
-    return view('teacher.teacher-class-list');
-});
-
-
-Route::get('/teacher/profile', function () {
-    return view('teacher.teacher-profile');
-});

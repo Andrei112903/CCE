@@ -123,12 +123,23 @@ class LoginController extends Controller
                 Auth::login($user);
                 $request->session()->regenerate();
                 
-                // Redirect and replace login page in history
+                // Double-check role after login to ensure it's still teacher
+                $loggedInUser = Auth::user();
+                if ($loggedInUser->role !== 'teacher') {
+                    Auth::logout();
+                    return back()->withErrors([
+                        'email' => 'Account role mismatch. Please contact administrator.',
+                    ])->withInput();
+                }
+                
+                // Explicitly redirect to teacher dashboard URL
                 return redirect('/teacher/dashboard')
                     ->with('success', 'Welcome back, ' . $user->name . '!');
             } else {
+                // If user exists but is not a teacher, show specific error
+                $roleMessage = $user->role ? "This account is a {$user->role} account, not a teacher account." : "This account does not have a valid role.";
                 return back()->withErrors([
-                    'email' => 'This account is not a teacher account.',
+                    'email' => $roleMessage . ' Please use the correct login portal.',
                 ])->withInput();
             }
         }
