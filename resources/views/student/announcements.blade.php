@@ -3,81 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Student Portal - Grades</title>
+    <title>Student Portal - Announcements</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/dashboard.css">
-    <style>
-        .grades-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #ffffff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            font-size: 14px;
-        }
-
-        .grades-table thead {
-            background-color: #f3f4f6;
-        }
-
-        .grades-table th,
-        .grades-table td {
-            padding: 14px 16px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .grades-table th {
-            font-weight: 600;
-            color: #4b5563;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }
-
-        .grades-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .grades-table tbody tr:hover {
-            background-color: #f9fafb;
-        }
-
-        .grades-table tbody tr:nth-child(even) {
-            background-color: #fafafa;
-        }
-
-        .grade-value {
-            font-size: 16px;
-            font-weight: 700;
-            color: #212529;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        @media (max-width: 768px) {
-            .grades-table {
-                font-size: 12px;
-            }
-
-            .grades-table th,
-            .grades-table td {
-                padding: 10px 12px;
-            }
-        }
-    </style>
 </head>
 <body>
+    <!-- Mobile Menu Toggle Button -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+    
     <div class="dashboard-container">
+        
         <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h2 class="sidebar-title">Student Portal</h2>
-                <button class="mobile-menu-close" id="mobileMenuClose" style="display: none;">×</button>
+            
+            <div class="logo-container">
+                <img src="/image/um-seal.png" alt="UM Logo" class="sidebar-logo">
             </div>
+
             
             <nav class="nav-menu">
                 <a href="/dashboard" class="nav-item">
@@ -105,7 +50,7 @@
 
                 <div class="nav-section">
                     <div class="nav-section-title">Records</div>
-                    <a href="/grades" class="nav-item active">
+                    <a href="/grades" class="nav-item">
                         <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                         </svg>
@@ -125,11 +70,23 @@
             </nav>
         </aside>
 
-        
+       
         <main class="main-content">
-           
+            
+            @if (session('success'))
+                <div style="background-color: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb; font-size: 14px; font-family: 'Inter', sans-serif;">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div style="background-color: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb; font-size: 14px; font-family: 'Inter', sans-serif;">
+                    {{ session('error') }}
+                </div>
+            @endif
+            
             <header class="content-header">
-                <h1 class="page-title">Grades</h1>
+                <h1 class="page-title">Announcements</h1>
                 <div class="user-info">
                     <div class="user-icon">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,92 +109,49 @@
                 </div>
             </header>
 
-            <div class="content-card">
-                <div class="card-header">
-                    <h2 class="card-title">My Grades</h2>
-                    <p class="card-subtitle">View your grades for enrolled subjects</p>
+            
+            <div class="dashboard-panel" style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);">
+                <div style="margin-bottom: 24px;">
+                    <h2 style="font-size: 20px; font-weight: 600; color: #212529; font-family: 'Inter', sans-serif; margin: 0;">Announcements</h2>
                 </div>
 
-                <div class="table-container">
-                    @if(count($enrollmentsWithGrades) > 0)
-                        <table class="grades-table">
-                            <thead>
-                                <tr>
-                                    <th>Subject Code</th>
-                                    <th>Subject Title</th>
-                                    <th>Description</th>
-                                    <th>Units</th>
-                                    <th>Final Grade</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($enrollmentsWithGrades as $item)
-                                    @php
-                                        $enrollment = $item['enrollment'];
-                                        $grades = $item['grades'];
-                                        $subject = $item['subject'] ?? null;
-                                        
-                                        // Get final grade (type is "Final Grade")
-                                        $finalGrade = $grades->where('type', 'Final Grade')->first();
-                                    @endphp
-                                    <tr>
-                                        <td style="font-weight: 500; color: #212529;">{{ $enrollment->subject_code }}</td>
-                                        <td style="color: #212529;">{{ $enrollment->subject_title }}</td>
-                                        <td style="color: #6c757d; max-width: 300px;">
-                                            @if($subject && $subject->description)
-                                                {{ trim(str_replace([$enrollment->subject_code, $enrollment->subject_title], '', $subject->description)) ?: $subject->description }}
-                                            @else
-                                                <span style="color: #9ca3af; font-style: italic;">No description</span>
-                                            @endif
-                                        </td>
-                                        <td style="color: #6c757d;">{{ number_format($enrollment->units, 1) }}</td>
-                                        <td>
-                                            @if($finalGrade && $finalGrade->grade !== null)
-                                                <span class="grade-value">{{ number_format((float)$finalGrade->grade, 1, '.', '') }}</span>
-                                            @else
-                                                <span style="color: #9ca3af; font-style: italic;">No grade yet</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    @else
-                        <div style="text-align: center; padding: 60px 20px; color: #6c757d;">
-                            <svg style="width: 64px; height: 64px; margin: 0 auto 16px; opacity: 0.5;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                            </svg>
-                            <p style="font-size: 16px; margin: 0;">No grades available yet.</p>
-                            <p style="font-size: 14px; margin: 8px 0 0 0; opacity: 0.7;">Grades will appear here once they are posted by your instructors.</p>
-                        </div>
-                    @endif
+                @forelse($announcements as $announcement)
+                <div style="background-color: #f9fafb; border-left: 4px solid #dc3545; padding: 20px; margin-bottom: 16px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #212529; font-family: 'Inter', sans-serif; margin: 0 0 8px 0;">{{ $announcement->title }}</h3>
+                        <span style="padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; background-color: #e9ecef; color: #495057;">
+                            {{ $announcement->target_audience }}
+                        </span>
+                    </div>
+                    <p style="font-size: 14px; color: #6c757d; font-family: 'Inter', sans-serif; line-height: 1.6; margin: 0 0 12px 0; white-space: pre-wrap;">{{ $announcement->content }}</p>
+                    <div style="font-size: 12px; color: #9ca3af; font-family: 'Inter', sans-serif;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        {{ $announcement->date->format('F d, Y') }}
+                    </div>
                 </div>
+                @empty
+                <div style="text-align: center; padding: 60px 20px; color: #6c757d;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px; margin: 0 auto 16px; opacity: 0.5;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>
+                    </svg>
+                    <p style="font-size: 16px; font-family: 'Inter', sans-serif; margin: 0;">No announcements available at this time.</p>
+                </div>
+                @endforelse
             </div>
         </main>
     </div>
 
-    <button class="mobile-menu-toggle" id="mobileMenuToggle">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-    </button>
-
     <script>
         // Mobile menu toggle
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-        const mobileMenuClose = document.getElementById('mobileMenuClose');
         const sidebar = document.getElementById('sidebar');
         
         if (mobileMenuToggle && sidebar) {
             mobileMenuToggle.addEventListener('click', function() {
                 sidebar.classList.toggle('open');
             });
-            
-            if (mobileMenuClose) {
-                mobileMenuClose.addEventListener('click', function() {
-                    sidebar.classList.remove('open');
-                });
-            }
             
             // Close sidebar when clicking outside on mobile
             document.addEventListener('click', function(event) {
@@ -251,6 +165,4 @@
     </script>
 </body>
 </html>
-
-
 

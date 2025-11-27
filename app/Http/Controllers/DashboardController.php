@@ -8,6 +8,7 @@ use App\Models\Subject;
 use App\Models\DropRequest;
 use App\Models\StudentEnrollment;
 use App\Models\Grade;
+use App\Models\Announcement;
 
 class DashboardController extends Controller
 {
@@ -435,5 +436,38 @@ class DashboardController extends Controller
                 'error' => 'An error occurred: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Display announcements for students.
+     */
+    public function announcements()
+    {
+        $user = Auth::user();
+        $student = $user ? $user->student : null;
+        
+        // Get announcements for students (All or Students)
+        $announcements = Announcement::whereIn('target_audience', ['All', 'Students'])
+            ->orderBy('date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        // Mark all visible announcements as viewed
+        if ($user && $announcements->isNotEmpty()) {
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('announcement_views')) {
+                    $announcementIds = $announcements->pluck('id');
+                    $user->viewedAnnouncements()->syncWithoutDetaching($announcementIds);
+                }
+            } catch (\Exception $e) {
+                // Table doesn't exist or error occurred, continue without marking as viewed
+            }
+        }
+        
+        return view('student.announcements', [
+            'student' => $student,
+            'user' => $user,
+            'announcements' => $announcements,
+        ]);
     }
 }

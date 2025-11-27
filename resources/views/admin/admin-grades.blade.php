@@ -94,16 +94,22 @@
                         </svg>
                     </div>
                     <span class="user-name">Ninfuy</span>
+                    <form method="POST" action="/logout" style="display: inline; margin-left: 12px;">
+                        @csrf
+                        <button type="submit" style="padding: 6px 12px; border-radius: 999px; border: none; background-color: rgba(217, 0, 0, 0.77); color: #ffffff; font-size: 12px; font-weight: 600; cursor: pointer">Logout</button>
+                    </form>
                 </div>
             </header>
 
             
-            <div style="margin-bottom: 24px; position: relative; max-width: 500px;">
-                <input type="text" id="searchInput" placeholder="Search students..." style="width: 100%; padding: 12px 45px 12px 16px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; box-sizing: border-box; background-color: white;">
-                <svg style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: #6c757d; pointer-events: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </div>
+            <form method="GET" action="{{ route('admin.grades') }}" style="margin-bottom: 24px; position: relative; max-width: 500px;">
+                <input type="text" name="search" id="searchInput" value="{{ $search }}" placeholder="Search students..." style="width: 100%; padding: 12px 45px 12px 16px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; box-sizing: border-box; background-color: white;">
+                <button type="submit" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0;">
+                    <svg style="width: 20px; height: 20px; color: #6c757d;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+            </form>
 
             
             <div class="course-table-container">
@@ -118,42 +124,23 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @forelse($students as $student)
                         <tr style="border-bottom: 1px solid #e5e7eb;" class="student-row">
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">144432</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">James Paul Silayan</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">Grade 11</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">ambot@gmail.com</td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->student_id }}</td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->first_name }} {{ $student->last_name }}</td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->grade_level ?? 'N/A' }}</td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->email }}</td>
                             <td style="padding: 12px 16px;">
-                                <button class="view-grades-btn" style="background-color: #22c55e; color: white; border: none; padding: 6px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background-color 0.2s;">View</button>
+                                <a href="{{ route('admin.view-student-grades', $student->student_id) }}" class="view-grades-btn" style="background-color: #22c55e; color: white; border: none; padding: 6px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background-color 0.2s; text-decoration: none; display: inline-block;">View</a>
                             </td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #e5e7eb;" class="student-row">
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">144434</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">Nino Malavar</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">3rd Year</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">ambot@gmail.com</td>
-                            <td style="padding: 12px 16px;">
-                                <button class="view-grades-btn" style="background-color: #22c55e; color: white; border: none; padding: 6px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background-color 0.2s;">View</button>
+                        @empty
+                        <tr>
+                            <td colspan="5" style="padding: 40px 16px; text-align: center; color: #6c757d; font-size: 14px;">
+                                No students found.
                             </td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #e5e7eb;" class="student-row">
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">144412</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">Ninong Castador</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">2nd Year</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">ambot@gmail.com</td>
-                            <td style="padding: 12px 16px;">
-                                <button class="view-grades-btn" style="background-color: #22c55e; color: white; border: none; padding: 6px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background-color 0.2s;">View</button>
-                            </td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e5e7eb;" class="student-row">
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">144121</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">Niiro Ladesma</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">3rd Year</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">ambot@gmail.com</td>
-                            <td style="padding: 12px 16px;">
-                                <button class="view-grades-btn" style="background-color: #22c55e; color: white; border: none; padding: 6px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background-color 0.2s;">View</button>
-                            </td>
-                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -207,10 +194,6 @@
             });
             btn.addEventListener('mouseleave', function() {
                 this.style.backgroundColor = '#22c55e';
-            });
-            btn.addEventListener('click', function() {
-                // Add functionality to view student grades
-                alert('View grades functionality will be implemented here');
             });
         });
     </script>

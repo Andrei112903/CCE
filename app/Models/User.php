@@ -62,4 +62,13 @@ class User extends Authenticatable
     {
         return $this->hasOne(Teacher::class);
     }
+
+    /**
+     * Get the announcements viewed by this user.
+     */
+    public function viewedAnnouncements()
+    {
+        return $this->belongsToMany(Announcement::class, 'announcement_views')
+            ->withTimestamps();
+    }
 }

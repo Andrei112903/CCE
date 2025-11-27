@@ -8,9 +8,49 @@ use App\Models\Subject;
 use App\Models\StudentEnrollment;
 use App\Models\Grade;
 use App\Models\Student;
+use App\Models\Announcement;
 
 class TeacherController extends Controller
 {
+    /**
+     * Display the teacher dashboard with statistics.
+     */
+    public function dashboard()
+    {
+        $user = Auth::user();
+        
+        if (!$user || $user->role !== 'teacher') {
+            return redirect('/')->with('error', 'Access denied.');
+        }
+
+        $teacher = $user->teacher;
+        
+        if (!$teacher) {
+            return redirect('/teacher/dashboard')->with('error', 'Teacher profile not found.');
+        }
+
+        // Get all subjects assigned to this teacher
+        $subjects = Subject::where('teacher_id', $teacher->id)->get();
+        
+        // Count total classes (subjects)
+        $totalClasses = $subjects->count();
+        
+        // Get all subject codes for this teacher
+        $subjectCodes = $subjects->pluck('code')->toArray();
+        
+        // Count total distinct students enrolled in any of these subjects
+        $totalStudents = StudentEnrollment::whereIn('subject_code', $subjectCodes)
+            ->distinct('student_id')
+            ->count('student_id');
+
+        return view('teacher.teacher-dashboard', [
+            'user' => $user,
+            'teacher' => $teacher,
+            'totalClasses' => $totalClasses,
+            'totalStudents' => $totalStudents,
+        ]);
+    }
+
     /**
      * Display the class list for the logged-in teacher.
      */
@@ -208,5 +248,47 @@ class TeacherController extends Controller
 
         return redirect()->route('teacher.class-details', $subjectId)
             ->with('success', 'Grade deleted successfully!');
+    }
+
+    /**
+     * Display announcements for teachers.
+     */
+    public function announcements()
+    {
+        $user = Auth::user();
+        
+        if (!$user || $user->role !== 'teacher') {
+            return redirect('/')->with('error', 'Access denied.');
+        }
+
+        $teacher = $user->teacher;
+        
+        if (!$teacher) {
+            return redirect('/teacher/dashboard')->with('error', 'Teacher profile not found.');
+        }
+
+        // Get announcements for teachers (All or Teachers)
+        $announcements = Announcement::whereIn('target_audience', ['All', 'Teachers'])
+            ->orderBy('date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        // Mark all visible announcements as viewed
+        if ($user && $announcements->isNotEmpty()) {
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('announcement_views')) {
+                    $announcementIds = $announcements->pluck('id');
+                    $user->viewedAnnouncements()->syncWithoutDetaching($announcementIds);
+                }
+            } catch (\Exception $e) {
+                // Table doesn't exist or error occurred, continue without marking as viewed
+            }
+        }
+        
+        return view('teacher.teacher-announcements', [
+            'user' => $user,
+            'teacher' => $teacher,
+            'announcements' => $announcements,
+        ]);
     }
 }

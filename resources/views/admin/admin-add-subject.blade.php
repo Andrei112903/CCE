@@ -94,6 +94,10 @@
                         </svg>
                     </div>
                     <span class="user-name">Ninfuy</span>
+                    <form method="POST" action="/logout" style="display: inline; margin-left: 12px;">
+                        @csrf
+                        <button type="submit" style="padding: 6px 12px; border-radius: 999px; border: none; background-color: rgba(217, 0, 0, 0.77); color: #ffffff; font-size: 12px; font-weight: 600; cursor: pointer">Logout</button>
+                    </form>
                 </div>
             </header>
 

@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\DropRequest;
 use App\Models\StudentEnrollment;
 use App\Models\Grade;
+use App\Models\Announcement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -310,5 +311,134 @@ class AdminController extends Controller
         
         return redirect()->route('admin.teachers')
             ->with('success', 'Teacher assignment updated successfully!');
+    }
+
+    /**
+     * Display the announcements management page.
+     */
+    public function announcements()
+    {
+        $announcements = Announcement::orderBy('date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.admin-announcements', [
+            'announcements' => $announcements,
+        ]);
+    }
+
+    /**
+     * Store a new announcement.
+     */
+    public function storeAnnouncement(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'date' => 'required|date',
+            'target_audience' => 'required|in:All,Students,Teachers,Admins',
+        ]);
+
+        Announcement::create($validated);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Announcement created successfully!']);
+        }
+
+        return redirect()->route('admin.announcements')
+            ->with('success', 'Announcement created successfully!');
+    }
+
+    /**
+     * Update an announcement.
+     */
+    public function updateAnnouncement(Request $request, $id)
+    {
+        $announcement = Announcement::findOrFail($id);
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'date' => 'required|date',
+            'target_audience' => 'required|in:All,Students,Teachers,Admins',
+        ]);
+
+        $announcement->update($validated);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Announcement updated successfully!']);
+        }
+
+        return redirect()->route('admin.announcements')
+            ->with('success', 'Announcement updated successfully!');
+    }
+
+    /**
+     * Delete an announcement.
+     */
+    public function deleteAnnouncement($id)
+    {
+        $announcement = Announcement::findOrFail($id);
+        $announcement->delete();
+
+        return redirect()->route('admin.announcements')
+            ->with('success', 'Announcement deleted successfully!');
+    }
+
+    /**
+     * Display the student grades page.
+     */
+    public function grades(Request $request)
+    {
+        $search = $request->get('search', '');
+        
+        $query = Student::query();
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('student_id', 'like', "%{$search}%")
+                  ->orWhere('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+        
+        $students = $query->orderBy('student_id')->get();
+        
+        return view('admin.admin-grades', [
+            'students' => $students,
+            'search' => $search,
+        ]);
+    }
+
+    /**
+     * View grades for a specific student.
+     */
+    public function viewStudentGrades($studentId)
+    {
+        $student = Student::where('student_id', $studentId)->orWhere('id', $studentId)->firstOrFail();
+        
+        // Get all enrollments for this student with their grades
+        $enrollments = StudentEnrollment::where('student_id', $student->id)
+            ->with(['grades' => function($query) {
+                $query->where('type', 'Final Grade')->orderBy('created_at', 'desc');
+            }])
+            ->get()
+            ->map(function($enrollment) {
+                $subject = $enrollment->subject();
+                // Get the most recent final grade
+                $finalGrade = $enrollment->grades()->where('type', 'Final Grade')->orderBy('created_at', 'desc')->first();
+                
+                return [
+                    'enrollment' => $enrollment,
+                    'subject' => $subject,
+                    'final_grade' => $finalGrade ? number_format((float)$finalGrade->grade, 1, '.', '') : null,
+                ];
+            });
+        
+        return view('admin.admin-student-grades', [
+            'student' => $student,
+            'enrollments' => $enrollments,
+        ]);
     }
 }

@@ -123,6 +123,16 @@ Route::middleware('auth')->group(function () {
         
         return app(DashboardController::class)->submitDropRequest($request);
     })->name('drop-request.submit');
+    
+    Route::get('/announcements', function (Request $request) {
+        $user = Auth::user();
+        
+        if (!$user || $user->role !== 'student') {
+            return redirect('/')->with('error', 'Access denied. Student account required.');
+        }
+        
+        return app(DashboardController::class)->announcements();
+    })->name('student.announcements');
 });
 
 
@@ -149,35 +159,19 @@ Route::post('/admin/drop-request/{id}/approve', [AdminController::class, 'approv
 Route::post('/admin/drop-request/{id}/reject', [AdminController::class, 'rejectDropRequest'])->name('admin.drop-request.reject');
 
 
-Route::get('/admin/grades', function () {
-    return view('admin.admin-grades');
-});
+Route::get('/admin/grades', [AdminController::class, 'grades'])->name('admin.grades');
+Route::get('/admin/grades/{studentId}', [AdminController::class, 'viewStudentGrades'])->name('admin.view-student-grades');
+
+
+Route::get('/admin/announcements', [AdminController::class, 'announcements'])->name('admin.announcements');
+Route::post('/admin/announcements', [AdminController::class, 'storeAnnouncement'])->name('admin.announcements.store');
+Route::put('/admin/announcements/{id}', [AdminController::class, 'updateAnnouncement'])->name('admin.announcements.update');
+Route::delete('/admin/announcements/{id}', [AdminController::class, 'deleteAnnouncement'])->name('admin.announcements.delete');
 
 
 // Teacher Routes (Protected - requires authentication and teacher role)
 Route::middleware('auth')->group(function () {
-    Route::get('/teacher/dashboard', function () {
-        $user = Auth::user();
-        
-        // Ensure only teachers can access
-        if (!$user || $user->role !== 'teacher') {
-            if ($user && $user->role === 'student') {
-                return redirect('/dashboard')->with('error', 'Students cannot access teacher portal.');
-            } elseif ($user && $user->role === 'admin') {
-                return redirect('/admin/dashboard')->with('error', 'Admins cannot access teacher portal.');
-            }
-            Auth::logout();
-            return redirect('/teacher/login')->with('error', 'Access denied. Teacher account required.');
-        }
-        
-        // Get teacher information
-        $teacher = $user->teacher ?? null;
-        
-        return view('teacher.teacher-dashboard', [
-            'user' => $user,
-            'teacher' => $teacher
-        ]);
-    })->name('teacher.dashboard');
+    Route::get('/teacher/dashboard', [TeacherController::class, 'dashboard'])->name('teacher.dashboard');
 
     Route::get('/teacher/class-list', [TeacherController::class, 'classList'])->name('teacher.class-list');
     Route::get('/teacher/class-list/{subjectId}', [TeacherController::class, 'viewClassDetails'])->name('teacher.class-details');
@@ -191,5 +185,7 @@ Route::middleware('auth')->group(function () {
         }
         return view('teacher.teacher-profile');
     });
+    
+    Route::get('/teacher/announcements', [TeacherController::class, 'announcements'])->name('teacher.announcements');
 });
 

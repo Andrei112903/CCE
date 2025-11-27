@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Dashboard</title>
+    <title>Admin - Student Grades: {{ $student->first_name }} {{ $student->last_name }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/dashboard.css">
 </head>
@@ -16,7 +16,7 @@
     </button>
     
     <div class="dashboard-container">
-       
+        
         <aside class="sidebar" id="sidebar">
             
             <div class="logo-container">
@@ -25,7 +25,7 @@
 
            
             <nav class="nav-menu">
-                <a href="/admin/dashboard" class="nav-item active">
+                <a href="/admin/dashboard" class="nav-item">
                     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                     </svg>
@@ -62,21 +62,11 @@
 
                 <div class="nav-section">
                     <div class="nav-section-title">Records</div>
-                    <a href="/admin/grades" class="nav-item">
+                    <a href="/admin/grades" class="nav-item active">
                         <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                         </svg>
                         Grades
-                    </a>
-                </div>
-
-                <div class="nav-section">
-                    <div class="nav-section-title">Student Account</div>
-                    <a href="#" class="nav-item">
-                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                        </svg>
-                        Assessment
                     </a>
                 </div>
 
@@ -92,11 +82,18 @@
             </nav>
         </aside>
 
-        
+       
         <main class="main-content">
-           
+            
             <header class="content-header">
-                <h1 class="page-title">Admin</h1>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <a href="{{ route('admin.grades') }}" style="display: inline-flex; align-items: center; padding: 8px; border-radius: 50%; background-color: #f3f4f6; color: #374151; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#e5e7eb'" onmouseout="this.style.backgroundColor='#f3f4f6'" title="Back to Grades">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </a>
+                    <h1 class="page-title">Student Grades: {{ $student->first_name }} {{ $student->last_name }}</h1>
+                </div>
                 <div class="user-info">
                     <div class="user-icon">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,19 +108,70 @@
                 </div>
             </header>
 
-           
-            <div class="admin-summary-row">
-                <div class="summary-card admin-summary-card">
-                    <div class="admin-summary-icon">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h-2a4 4 0 00-8 0H5a3 3 0 01-3-3v-1a3 3 0 013-3h1.5M19 20h0a3 3 0 003-3v-1a3 3 0 00-3-3H17.5M12 12a4 4 0 100-8 4 4 0 000 8zm6 0a3 3 0 10-3-3 3 3 0 003 3z"></path>
-                        </svg>
+            <!-- Student Info Card -->
+            <div style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                    <div>
+                        <div style="font-size: 12px; color: #6c757d; font-weight: 500; margin-bottom: 4px;">Student ID</div>
+                        <div style="font-size: 16px; color: #212529; font-weight: 600;">{{ $student->student_id }}</div>
                     </div>
-                    <div class="admin-summary-text">
-                        <div class="admin-summary-label">Total Students</div>
-                        <div class="admin-summary-value">{{ number_format($totalStudents) }}</div>
+                    <div>
+                        <div style="font-size: 12px; color: #6c757d; font-weight: 500; margin-bottom: 4px;">Name</div>
+                        <div style="font-size: 16px; color: #212529; font-weight: 600;">{{ $student->first_name }} {{ $student->last_name }}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #6c757d; font-weight: 500; margin-bottom: 4px;">Grade Level</div>
+                        <div style="font-size: 16px; color: #212529; font-weight: 600;">{{ $student->grade_level ?? 'N/A' }}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #6c757d; font-weight: 500; margin-bottom: 4px;">Email</div>
+                        <div style="font-size: 16px; color: #212529; font-weight: 600;">{{ $student->email }}</div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Grades Table -->
+            <div class="course-table-container">
+                <table class="teacher-table" style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);">
+                    <thead>
+                        <tr style="background-color: #f3f4f6;">
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em;">Subject Code</th>
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em;">Subject Title</th>
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em;">Description</th>
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em;">Units</th>
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em;">Final Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($enrollments as $item)
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $item['enrollment']->subject_code }}</td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $item['enrollment']->subject_title }}</td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">
+                                @if($item['subject'] && $item['subject']->description)
+                                    {{ $item['subject']->description }}
+                                @else
+                                    N/A
+                                @endif
+                            </td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $item['enrollment']->units }}</td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px; font-weight: 500;">
+                                @if($item['final_grade'])
+                                    {{ $item['final_grade'] }}
+                                @else
+                                    <span style="color: #6c757d;">No grade</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" style="padding: 40px 16px; text-align: center; color: #6c757d; font-size: 14px;">
+                                No enrolled subjects found for this student.
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </main>
     </div>
