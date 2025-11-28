@@ -276,6 +276,66 @@
                 window.history.pushState(null, null, window.location.href);
             }
         })();
+
+        // Cross-tab logout detection
+        (function() {
+            let lastLogoutCheck = localStorage.getItem('lastLogoutCheck') || 0;
+            let checkInterval;
+
+            function checkAuthStatus() {
+                fetch('/teacher/dashboard', {
+                    method: 'HEAD',
+                    credentials: 'same-origin',
+                    headers: {'X-Requested-With': 'XMLHttpRequest'}
+                })
+                .then(response => {
+                    if (response.status === 401 || response.status === 403 || (response.redirected && response.url.includes('/teacher/login'))) {
+                        handleLogout();
+                    }
+                })
+                .catch(() => {
+                    const logoutTime = sessionStorage.getItem('logoutTime');
+                    if (logoutTime && parseInt(logoutTime) > parseInt(lastLogoutCheck)) {
+                        handleLogout();
+                    }
+                });
+            }
+
+            function handleLogout() {
+                clearInterval(checkInterval);
+                localStorage.removeItem('lastLogoutCheck');
+                sessionStorage.removeItem('logoutTime');
+                alert('You have been logged out. Redirecting to login page...');
+                window.location.href = '/teacher/login';
+            }
+
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'logoutTime' || e.key === 'teacherLogout') {
+                    handleLogout();
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const logoutForms = document.querySelectorAll('form[action="/logout"]');
+                logoutForms.forEach(function(form) {
+                    form.addEventListener('submit', function() {
+                        sessionStorage.setItem('logoutTime', Date.now().toString());
+                        localStorage.setItem('teacherLogout', Date.now().toString());
+                    });
+                });
+            });
+
+            checkInterval = setInterval(function() {
+                lastLogoutCheck = Date.now();
+                localStorage.setItem('lastLogoutCheck', lastLogoutCheck.toString());
+                checkAuthStatus();
+            }, 2000);
+
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) checkAuthStatus();
+            });
+            window.addEventListener('focus', checkAuthStatus);
+        })();
     </script>
 </body>
 </html>

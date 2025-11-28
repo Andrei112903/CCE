@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Forgot Password - UM {{ ucfirst($type) }} Portal</title>
+    <title>Admin Login - UM Portal</title>
     <link rel="stylesheet" href="/css/loginstyle.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -25,15 +25,11 @@
         <div class="right-section">
             <div class="portal-card">
                 <img src="/image/um-seal.png" alt="UM Logo" class="um-logo">
-                <h2>{{ ucfirst($type) }} Portal</h2>
+                <h2>Admin Portal</h2>
                 <p class="campus-name">Tagum Campus</p>
-                <p style="color: #666; font-size: 0.95em; margin-bottom: 25px;">
-                    Enter your email address and we'll help you reset your password.
-                </p>
                 
-                <form method="POST" action="{{ route('password.email') }}">
+                <form method="POST" action="/admin/login">
                     @csrf
-                    <input type="hidden" name="type" value="{{ $type }}">
                     
                     @if ($errors->any())
                         <div style="background-color: #fee; color: #c33; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px;">
@@ -47,30 +43,12 @@
                         </div>
                     @endif
 
-                    @if (session('info'))
-                        <div style="background-color: #e3f2fd; color: #1976d2; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px;">
-                            {{ session('info') }}
-                        </div>
-                    @endif
-
-                    <input type="email" name="email" value="{{ old('email') }}" placeholder="Email or {{ ucfirst($type) }} ID Number" required autofocus style="width: calc(100% - 20px); padding: 15px 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em; min-height: 48px;">
-                    
-                    <button type="submit" class="login-button">Send Password Reset Link</button>
+                    <input type="password" name="password" placeholder="Enter Admin Password" required autofocus>
+                    <button type="submit" class="login-button">Login</button>
                 </form>
-
-                <div style="margin-top: 20px; text-align: center;">
-                    <a href="{{ $type === 'teacher' ? route('teacher.login') : route('login') }}" style="color: var(--um-red); text-decoration: none; font-size: 0.9em;">
-                        ← Back to Login
-                    </a>
-                </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-
-
-
-
-
 

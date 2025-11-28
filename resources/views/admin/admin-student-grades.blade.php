@@ -95,12 +95,12 @@
                     <h1 class="page-title">Student Grades: {{ $student->first_name }} {{ $student->last_name }}</h1>
                 </div>
                 <div class="user-info">
-                    <div class="user-icon">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="/admin/change-password" class="user-icon" style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background-color: #f3f4f6; color: #374151; text-decoration: none; transition: background-color 0.2s; cursor: pointer;" onmouseover="this.style.backgroundColor='#e5e7eb'" onmouseout="this.style.backgroundColor='#f3f4f6'" title="Change Password">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
-                    </div>
-                    <span class="user-name">Ninfuy</span>
+                    </a>
+                    <span class="user-name">{{ Auth::user()->name ?? 'Admin' }}</span>
                     <form method="POST" action="/logout" style="display: inline; margin-left: 12px;">
                         @csrf
                         <button type="submit" style="padding: 6px 12px; border-radius: 999px; border: none; background-color: rgba(217, 0, 0, 0.77); color: #ffffff; font-size: 12px; font-weight: 600; cursor: pointer">Logout</button>
@@ -195,6 +195,66 @@
                 }
             });
         }
+
+        // Cross-tab logout detection
+        (function() {
+            let lastLogoutCheck = localStorage.getItem('lastLogoutCheck') || 0;
+            let checkInterval;
+
+            function checkAuthStatus() {
+                fetch('/admin/dashboard', {
+                    method: 'HEAD',
+                    credentials: 'same-origin',
+                    headers: {'X-Requested-With': 'XMLHttpRequest'}
+                })
+                .then(response => {
+                    if (response.status === 401 || response.status === 403 || (response.redirected && response.url.includes('/admin/login'))) {
+                        handleLogout();
+                    }
+                })
+                .catch(() => {
+                    const logoutTime = sessionStorage.getItem('logoutTime');
+                    if (logoutTime && parseInt(logoutTime) > parseInt(lastLogoutCheck)) {
+                        handleLogout();
+                    }
+                });
+            }
+
+            function handleLogout() {
+                clearInterval(checkInterval);
+                localStorage.removeItem('lastLogoutCheck');
+                sessionStorage.removeItem('logoutTime');
+                alert('You have been logged out. Redirecting to login page...');
+                window.location.href = '/admin/login';
+            }
+
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'logoutTime' || e.key === 'adminLogout') {
+                    handleLogout();
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const logoutForms = document.querySelectorAll('form[action="/logout"]');
+                logoutForms.forEach(function(form) {
+                    form.addEventListener('submit', function() {
+                        sessionStorage.setItem('logoutTime', Date.now().toString());
+                        localStorage.setItem('adminLogout', Date.now().toString());
+                    });
+                });
+            });
+
+            checkInterval = setInterval(function() {
+                lastLogoutCheck = Date.now();
+                localStorage.setItem('lastLogoutCheck', lastLogoutCheck.toString());
+                checkAuthStatus();
+            }, 2000);
+
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) checkAuthStatus();
+            });
+            window.addEventListener('focus', checkAuthStatus);
+        })();
     </script>
 </body>
 </html>

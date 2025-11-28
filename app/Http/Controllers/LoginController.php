@@ -149,6 +149,62 @@ class LoginController extends Controller
         ])->withInput();
     }
 
+    public function showAdminLogin(Request $request){
+        // If already logged in, redirect based on role
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role === 'admin') {
+                return redirect('/admin/dashboard');
+            } elseif ($user->role === 'teacher') {
+                return redirect('/teacher/dashboard');
+            } elseif ($user->role === 'student') {
+                return redirect('/dashboard');
+            }
+        }
+        
+        // Prevent caching of login page
+        $response = response()->view('admin.admin-login');
+        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+        
+        return $response;
+    }
+
+    public function adminLogin(Request $request){
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        $password = $request->password;
+
+        // Find or create an admin user
+        $adminUser = User::where('role', 'admin')->first();
+        
+        if (!$adminUser) {
+            // Create a default admin user if none exists
+            $adminUser = User::create([
+                'name' => 'Administrator',
+                'email' => 'admin@um.edu.ph',
+                'password' => Hash::make('admin112903'),
+                'role' => 'admin',
+            ]);
+        }
+
+        // Check if password is "admin112903" (for backward compatibility) OR matches the user's stored password
+        if ($password === 'admin112903' || Hash::check($password, $adminUser->password)) {
+            Auth::login($adminUser);
+            $request->session()->regenerate();
+            
+            return redirect('/admin/dashboard')
+                ->with('success', 'Welcome back, ' . $adminUser->name . '!');
+        }
+
+        return back()->withErrors([
+            'password' => 'The provided password is incorrect.',
+        ])->withInput();
+    }
+
     public function logout(Request $request)
     {
         $user = Auth::user();
@@ -158,9 +214,14 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        // Set logout flag in session for cross-tab detection
+        $request->session()->put('logout_flag', time());
+
         // Redirect based on role
         if ($role === 'teacher') {
             return redirect('/teacher/login')->with('success', 'You have been logged out successfully.');
+        } elseif ($role === 'admin') {
+            return redirect('/admin/login')->with('success', 'You have been logged out successfully.');
         }
         
         return redirect('/')->with('success', 'You have been logged out successfully.');

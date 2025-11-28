@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Enrolled Students: {{ $subject->code }}</title>
+    <title>Admin - Change Password</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/dashboard.css">
 </head>
@@ -16,7 +16,7 @@
     </button>
     
     <div class="dashboard-container">
-        
+       
         <aside class="sidebar" id="sidebar">
             
             <div class="logo-container">
@@ -46,7 +46,7 @@
 
                 <div class="nav-section">
                     <div class="nav-section-title">Online Enrollment</div>
-                    <a href="/admin/add-subject" class="nav-item active">
+                    <a href="/admin/add-subject" class="nav-item">
                         <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
@@ -71,6 +71,16 @@
                 </div>
 
                 <div class="nav-section">
+                    <div class="nav-section-title">Student Account</div>
+                    <a href="#" class="nav-item">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        Assessment
+                    </a>
+                </div>
+
+                <div class="nav-section">
                     <div class="nav-section-title">Communication</div>
                     <a href="/admin/announcements" class="nav-item">
                         <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,18 +92,11 @@
             </nav>
         </aside>
 
-       
+        
         <main class="main-content">
-            
+           
             <header class="content-header">
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <a href="{{ route('admin.add-subject') }}" style="display: inline-flex; align-items: center; padding: 8px; border-radius: 50%; background-color: #f3f4f6; color: #374151; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#e5e7eb'" onmouseout="this.style.backgroundColor='#f3f4f6'" title="Back to Subjects">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                    </a>
-                    <h1 class="page-title">Enrolled Students: {{ $subject->code }} - {{ $subject->title }}</h1>
-                </div>
+                <h1 class="page-title">Change Password</h1>
                 <div class="user-info">
                     <a href="/admin/change-password" class="user-icon" style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background-color: #f3f4f6; color: #374151; text-decoration: none; transition: background-color 0.2s; cursor: pointer;" onmouseover="this.style.backgroundColor='#e5e7eb'" onmouseout="this.style.backgroundColor='#f3f4f6'" title="Change Password">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
@@ -108,62 +111,69 @@
                 </div>
             </header>
 
-            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                <h2 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 600; color: #212529; font-family: 'Inter', sans-serif;">Subject Information</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-                    <div>
-                        <span style="font-size: 12px; color: #6c757d; font-weight: 500; font-family: 'Inter', sans-serif;">Subject Code:</span>
-                        <p style="margin: 4px 0 0 0; font-size: 14px; color: #212529; font-family: 'Inter', sans-serif;">{{ $subject->code }}</p>
+           
+            <div style="max-width: 600px; margin: 40px auto; padding: 0 20px;">
+                @if (session('success'))
+                    <div style="background-color: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb; font-size: 14px;">
+                        {{ session('success') }}
                     </div>
-                    <div>
-                        <span style="font-size: 12px; color: #6c757d; font-weight: 500; font-family: 'Inter', sans-serif;">Subject Title:</span>
-                        <p style="margin: 4px 0 0 0; font-size: 14px; color: #212529; font-family: 'Inter', sans-serif;">{{ $subject->title }}</p>
-                    </div>
-                    <div>
-                        <span style="font-size: 12px; color: #6c757d; font-weight: 500; font-family: 'Inter', sans-serif;">Units:</span>
-                        <p style="margin: 4px 0 0 0; font-size: 14px; color: #212529; font-family: 'Inter', sans-serif;">{{ number_format($subject->units, 1) }}</p>
-                    </div>
-                    <div>
-                        <span style="font-size: 12px; color: #6c757d; font-weight: 500; font-family: 'Inter', sans-serif;">Total Enrolled:</span>
-                        <p style="margin: 4px 0 0 0; font-size: 14px; color: #212529; font-family: 'Inter', sans-serif; font-weight: 600;">{{ $students->count() }} student(s)</p>
-                    </div>
-                </div>
-            </div>
+                @endif
 
-            
-            <div class="course-table-container">
-                <table class="teacher-table" style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    <thead>
-                        <tr style="background-color: #f8f9fa; border-bottom: 2px solid #e9ecef;">
-                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Student ID</th>
-                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Student Name</th>
-                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Year Level</th>
-                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Email</th>
-                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Schedule</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($students as $item)
-                        @php
-                            $student = $item['student'];
-                            $enrollment = $item['enrollment'];
-                        @endphp
-                        <tr style="border-bottom: 1px solid #e9ecef;">
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->student_id ?? '-' }}</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->first_name ?? '' }} {{ $student->last_name ?? '' }}</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->grade_level ?? '-' }}</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->email ?? '-' }}</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $enrollment->schedule ?? '-' }}</td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" style="padding: 40px 16px; text-align: center; color: #6c757d; font-size: 14px;">
-                                No students enrolled in this subject yet.
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                @if (session('error'))
+                    <div style="background-color: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb; font-size: 14px;">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                @if ($errors->any())
+                    <div style="background-color: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb; font-size: 14px;">
+                        <ul style="margin: 0; padding-left: 20px;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <div style="background: white; padding: 32px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+                    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 24px; color: #111827;">Change Admin Password</h2>
+                    
+                    <form method="POST" action="/admin/change-password">
+                        @csrf
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label for="current_password" style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #374151;">Current Password</label>
+                            <input type="password" name="current_password" id="current_password" required 
+                                   style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.2s;"
+                                   onfocus="this.style.borderColor='#cc2128'" onblur="this.style.borderColor='#d1d5db'">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label for="new_password" style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #374151;">New Password</label>
+                            <input type="password" name="new_password" id="new_password" required 
+                                   style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.2s;"
+                                   onfocus="this.style.borderColor='#cc2128'" onblur="this.style.borderColor='#d1d5db'">
+                        </div>
+
+                        <div style="margin-bottom: 24px;">
+                            <label for="new_password_confirmation" style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #374151;">Confirm New Password</label>
+                            <input type="password" name="new_password_confirmation" id="new_password_confirmation" required 
+                                   style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.2s;"
+                                   onfocus="this.style.borderColor='#cc2128'" onblur="this.style.borderColor='#d1d5db'">
+                        </div>
+
+                        <div style="display: flex; gap: 12px;">
+                            <button type="submit" style="flex: 1; padding: 12px 24px; background-color: #cc2128; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.2s;"
+                                    onmouseover="this.style.backgroundColor='#a31a1f'" onmouseout="this.style.backgroundColor='#cc2128'">
+                                Change Password
+                            </button>
+                            <a href="/admin/dashboard" style="flex: 1; padding: 12px 24px; background-color: #f3f4f6; color: #374151; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;"
+                               onmouseover="this.style.backgroundColor='#e5e7eb'" onmouseout="this.style.backgroundColor='#f3f4f6'">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </main>
     </div>
@@ -250,5 +260,4 @@
     </script>
 </body>
 </html>
-
 

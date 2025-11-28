@@ -136,11 +136,20 @@ Route::middleware('auth')->group(function () {
 });
 
 
+// Admin Login Routes
+Route::get('/admin/login', [LoginController::class, 'showAdminLogin'])->name('admin.login');
+Route::post('/admin/login', [LoginController::class, 'adminLogin']);
+
+// Admin Password Change Routes
+Route::get('/admin/change-password', [AdminController::class, 'showChangePassword'])->name('admin.change-password');
+Route::post('/admin/change-password', [AdminController::class, 'changePassword']);
+
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
 
 
 Route::get('/admin/teachers', [AdminController::class, 'teachers'])->name('admin.teachers');
 Route::post('/admin/subjects/{id}/assign-teacher', [AdminController::class, 'assignTeacherToSubject'])->name('admin.subjects.assign-teacher');
+Route::post('/admin/teachers/{id}/assign-subjects', [AdminController::class, 'assignSubjectsToTeacher'])->name('admin.teachers.assign-subjects');
 
 
 Route::get('/admin/add-subject', [AdminController::class, 'addSubject'])->name('admin.add-subject');

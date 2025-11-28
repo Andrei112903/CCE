@@ -12,6 +12,8 @@ use App\Models\Grade;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -313,6 +315,32 @@ class AdminController extends Controller
     }
 
     /**
+     * Assign subjects to a teacher.
+     */
+    public function assignSubjectsToTeacher(Request $request, $id)
+    {
+        $teacher = Teacher::findOrFail($id);
+        
+        $validated = $request->validate([
+            'subject_ids' => 'nullable|array',
+            'subject_ids.*' => 'exists:subjects,id',
+        ]);
+        
+        $subjectIds = $validated['subject_ids'] ?? [];
+        
+        // First, remove this teacher from all subjects
+        Subject::where('teacher_id', $teacher->id)->update(['teacher_id' => null]);
+        
+        // Then assign selected subjects to this teacher
+        if (!empty($subjectIds)) {
+            Subject::whereIn('id', $subjectIds)->update(['teacher_id' => $teacher->id]);
+        }
+        
+        return redirect()->route('admin.teachers')
+            ->with('success', 'Subjects assigned to ' . $teacher->first_name . ' ' . $teacher->last_name . ' successfully!');
+    }
+
+    /**
      * Display the announcements management page.
      */
     public function announcements()
@@ -467,5 +495,41 @@ class AdminController extends Controller
             'subject' => $subject,
             'students' => $students,
         ]);
+    }
+
+    /**
+     * Display the change password page.
+     */
+    public function showChangePassword()
+    {
+        return view('admin.admin-change-password');
+    }
+
+    /**
+     * Handle password change request.
+     */
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = Auth::user();
+
+        // Check if current password is correct
+        // For admin, check if it matches the hardcoded "admin112903" password or the user's password
+        if ($request->current_password === 'admin112903' || Hash::check($request->current_password, $user->password)) {
+            // Update password
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+
+            return redirect()->route('admin.change-password')
+                ->with('success', 'Password changed successfully!');
+        }
+
+        return back()->withErrors([
+            'current_password' => 'The current password is incorrect.',
+        ])->withInput();
     }
 }
