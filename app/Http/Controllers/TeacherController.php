@@ -43,11 +43,19 @@ class TeacherController extends Controller
             ->distinct('student_id')
             ->count('student_id');
 
+        // Get announcements for teachers (All or Teachers)
+        $announcements = Announcement::whereIn('target_audience', ['All', 'Teachers'])
+            ->orderBy('date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->limit(5) // Show only latest 5 announcements
+            ->get();
+
         return view('teacher.teacher-dashboard', [
             'user' => $user,
             'teacher' => $teacher,
             'totalClasses' => $totalClasses,
             'totalStudents' => $totalStudents,
+            'announcements' => $announcements,
         ]);
     }
 
@@ -290,5 +298,127 @@ class TeacherController extends Controller
             'teacher' => $teacher,
             'announcements' => $announcements,
         ]);
+    }
+
+    /**
+     * Display the teacher profile page.
+     */
+    public function showProfile()
+    {
+        $user = Auth::user();
+        
+        if (!$user || $user->role !== 'teacher') {
+            return redirect('/')->with('error', 'Access denied.');
+        }
+
+        $teacher = $user->teacher;
+        
+        if (!$teacher) {
+            return redirect('/teacher/dashboard')->with('error', 'Teacher profile not found.');
+        }
+
+        return view('teacher.teacher-profile', [
+            'user' => $user,
+            'teacher' => $teacher,
+        ]);
+    }
+
+    /**
+     * Update teacher profile.
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        
+        if (!$user || $user->role !== 'teacher') {
+            return response()->json(['success' => false, 'error' => 'Access denied.'], 403);
+        }
+
+        $teacher = $user->teacher;
+        
+        if (!$teacher) {
+            return response()->json(['success' => false, 'error' => 'Teacher profile not found.'], 404);
+        }
+
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:teachers,email,' . $teacher->id . '|unique:users,email,' . $user->id,
+            'gender' => 'required|in:Male,Female',
+            'mobile_number' => 'required|string|max:20',
+            'street' => 'nullable|string|max:255',
+            'barangay' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'province' => 'nullable|string|max:255',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        try {
+            $updateData = [
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'email' => $validated['email'],
+                'gender' => $validated['gender'],
+                'mobile_number' => $validated['mobile_number'],
+                'street' => $validated['street'] ?? null,
+                'barangay' => $validated['barangay'] ?? null,
+                'city' => $validated['city'] ?? null,
+                'province' => $validated['province'] ?? null,
+            ];
+
+            // Handle profile picture upload
+            if ($request->hasFile('profile_picture')) {
+                // Delete old profile picture if exists
+                if ($teacher->profile_picture) {
+                    $oldPath = storage_path('app/public/' . $teacher->profile_picture);
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
+                }
+
+                // Store new profile picture
+                $file = $request->file('profile_picture');
+                $filename = 'profile_pictures/' . time() . '_' . $teacher->id . '.' . $file->getClientOriginalExtension();
+                
+                // Store the file
+                $path = $file->storeAs('public', $filename);
+                
+                // Verify file was stored
+                if ($path) {
+                    $updateData['profile_picture'] = $filename;
+                } else {
+                    throw new \Exception('Failed to store profile picture');
+                }
+            }
+
+            // Update teacher record
+            $teacher->update($updateData);
+
+            // Update user record (name and email)
+            $user->update([
+                'name' => $validated['first_name'] . ' ' . $validated['last_name'],
+                'email' => $validated['email'],
+            ]);
+
+            // Refresh teacher data
+            $teacher->refresh();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile updated successfully!',
+                'teacher' => [
+                    'id' => $teacher->id,
+                    'first_name' => $teacher->first_name,
+                    'last_name' => $teacher->last_name,
+                    'email' => $teacher->email,
+                    'profile_picture' => $teacher->profile_picture,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to update profile: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

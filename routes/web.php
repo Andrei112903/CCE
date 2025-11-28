@@ -188,13 +188,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/teacher/class-list/{subjectId}/grade', [TeacherController::class, 'storeGrade'])->name('teacher.store-grade');
     Route::delete('/teacher/class-list/{subjectId}/grade/{gradeId}', [TeacherController::class, 'deleteGrade'])->name('teacher.delete-grade');
 
-    Route::get('/teacher/profile', function () {
-        $user = Auth::user();
-        if ($user->role !== 'teacher') {
-            return redirect('/')->with('error', 'Access denied.');
-        }
-        return view('teacher.teacher-profile');
-    });
+    Route::get('/teacher/profile', [TeacherController::class, 'showProfile'])->name('teacher.profile');
+    Route::post('/teacher/profile', [TeacherController::class, 'updateProfile'])->name('teacher.profile.update');
     
     Route::get('/teacher/announcements', [TeacherController::class, 'announcements'])->name('teacher.announcements');
 });

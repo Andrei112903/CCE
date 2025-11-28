@@ -281,6 +281,10 @@
         // Enrolled schedules (to prevent schedule conflicts)
         const enrolledSchedules = @json($enrolledSchedules ?? []);
         
+        // Unit limit information
+        const currentTotalUnits = {{ $currentTotalUnits ?? 0 }};
+        const maxUnits = {{ $maxUnits ?? 25 }};
+        
         // Debug: Log the data
         console.log('allSubjects loaded:', Array.isArray(allSubjects) ? allSubjects.length + ' subjects' : typeof allSubjects);
         console.log('enrolledSubjectCodes:', enrolledSubjectCodes);
@@ -426,14 +430,25 @@
                     const escapedCode = (subject.code || '').replace(/'/g, "\\'");
                     const escapedTitle = (subject.title || '').replace(/'/g, "\\'");
                     const escapedSchedule = (subject.schedule || '-').replace(/'/g, "\\'");
+                    const subjectUnits = parseFloat(subject.units || 0);
+                    const newTotalUnits = currentTotalUnits + subjectUnits;
+                    const wouldExceedLimit = newTotalUnits > maxUnits;
+                    const buttonStyle = wouldExceedLimit 
+                        ? 'background-color: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: not-allowed; opacity: 0.6;'
+                        : 'background-color: #22c55e; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; cursor: pointer;';
+                    const buttonText = wouldExceedLimit ? 'Exceeds Limit' : 'Enlist';
+                    const rowStyle = wouldExceedLimit ? 'border-bottom: 1px solid #e5e7eb; background-color: #fff3cd;' : 'border-bottom: 1px solid #e5e7eb;';
+                    const textColor = wouldExceedLimit ? '#856404' : '#212529';
+                    const onClick = wouldExceedLimit ? '' : `onclick="selectSchedule('${escapedCode}', '${escapedTitle}', ${subject.units || 0}, '${escapedSchedule}')"`;
+                    
                     return `
-                    <tr style="border-bottom: 1px solid #e5e7eb;">
-                        <td style="padding: 12px 16px; color: #212529; font-size: 14px;">${subject.code || '-'}</td>
-                        <td style="padding: 12px 16px; color: #212529; font-size: 14px;">${subject.title || '-'}</td>
-                        <td style="padding: 12px 16px; color: #212529; font-size: 14px;">${parseFloat(subject.units || 0).toFixed(1)}</td>
-                        <td style="padding: 12px 16px; color: #212529; font-size: 14px;">${subject.schedule || '-'}</td>
+                    <tr style="${rowStyle}">
+                        <td style="padding: 12px 16px; color: ${textColor}; font-size: 14px;">${subject.code || '-'}</td>
+                        <td style="padding: 12px 16px; color: ${textColor}; font-size: 14px;">${subject.title || '-'}</td>
+                        <td style="padding: 12px 16px; color: ${textColor}; font-size: 14px;">${subjectUnits.toFixed(1)}</td>
+                        <td style="padding: 12px 16px; color: ${textColor}; font-size: 14px;">${subject.schedule || '-'}</td>
                         <td style="padding: 12px 16px;">
-                            <button type="button" class="Enlist-button" onclick="selectSchedule('${escapedCode}', '${escapedTitle}', ${subject.units || 0}, '${escapedSchedule}')" style="background-color: #22c55e; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; cursor: pointer;">Enlist</button>
+                            <button type="button" class="Enlist-button" ${onClick} ${wouldExceedLimit ? 'disabled' : ''} style="${buttonStyle}">${buttonText}</button>
                         </td>
                     </tr>
                 `;
@@ -485,6 +500,20 @@
 
         // Function to select a schedule and show confirmation
         window.selectSchedule = function(code, title, units, schedule) {
+            // Check unit limit before proceeding
+            const subjectUnits = parseFloat(units);
+            const newTotalUnits = currentTotalUnits + subjectUnits;
+            
+            if (newTotalUnits > maxUnits) {
+                const remainingUnits = maxUnits - currentTotalUnits;
+                alert('Maximum unit limit exceeded! You can enroll a maximum of ' + maxUnits + ' units.\n\n' +
+                      'Current total: ' + currentTotalUnits.toFixed(1) + ' units\n' +
+                      'This subject: ' + subjectUnits.toFixed(1) + ' units\n' +
+                      'New total would be: ' + newTotalUnits.toFixed(1) + ' units\n\n' +
+                      'You can only add up to ' + remainingUnits.toFixed(1) + ' more units.');
+                return;
+            }
+            
             // Store selected subject data
             selectedSubjectData = {
                 code: code,

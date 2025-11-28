@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Teacher Portal - Profile Settings</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/dashboard.css">
@@ -64,22 +65,41 @@
             position: relative;
             display: inline-block;
             margin: 0 auto;
+            width: 120px;
+            height: 120px;
         }
 
         .camera-icon {
             position: absolute;
-            top: 80%;
-            right: 480px;
-            transform: translateY(-50%);
-            width: 32px;
-            height: 32px;
-            background-color: transparent;
+            bottom: 0;
+            right: 0;
+            width: 36px;
+            height: 36px;
+            background-color: #3b82f6;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             z-index: 10;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s ease;
+        }
+
+        .camera-icon:hover {
+            background-color: #2563eb;
+        }
+
+        .camera-icon input[type="file"] {
+            display: none;
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .camera-icon svg {
@@ -374,7 +394,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </div>
-                    <span class="user-name">Ninfuy</span>
+                    <span class="user-name">{{ $teacher->first_name ?? $user->name }}</span>
                 </div>
             </header>
 
@@ -384,11 +404,19 @@
                 <!-- View Mode -->
                 <div class="profile-summary view-mode-content">
                     <div class="profile-picture">
-                        <!-- Profile picture placeholder -->
+                        @if($teacher->profile_picture)
+                            <img src="{{ asset('storage/' . $teacher->profile_picture) }}" alt="Profile Picture" id="profilePictureView">
+                        @else
+                            <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background-color: #e5e7eb; color: #6b7280; font-size: 48px;">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 60px; height: 60px;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                        @endif
                     </div>
-                    <div class="profile-name">Ninyo Malvar Silayan</div>
+                    <div class="profile-name">{{ $teacher->first_name }} {{ $teacher->last_name }}</div>
                     <div class="profile-email-container">
-                        <span class="profile-email">Ambot32@gmail.com</span>
+                        <span class="profile-email">{{ $teacher->email }}</span>
                         <svg class="edit-icon" id="editIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                         </svg>
@@ -400,23 +428,23 @@
                     <div class="info-grid">
                         <div class="info-field">
                             <div class="field-label">First Name</div>
-                            <div class="field-value">Ninyo</div>
+                            <div class="field-value">{{ $teacher->first_name }}</div>
                         </div>
                         <div class="info-field">
                             <div class="field-label">Last Name</div>
-                            <div class="field-value">Silayan</div>
+                            <div class="field-value">{{ $teacher->last_name }}</div>
                         </div>
                         <div class="info-field">
                             <div class="field-label">Email</div>
-                            <div class="field-value">Ambot32@gmail.com</div>
+                            <div class="field-value">{{ $teacher->email }}</div>
                         </div>
                         <div class="info-field">
                             <div class="field-label">Gender</div>
-                            <div class="field-value">Male</div>
+                            <div class="field-value">{{ $teacher->gender }}</div>
                         </div>
                         <div class="info-field">
                             <div class="field-label">Mobile Number</div>
-                            <div class="field-value">09123456789</div>
+                            <div class="field-value">{{ $teacher->mobile_number }}</div>
                         </div>
                     </div>
                 </div>
@@ -426,19 +454,19 @@
                     <div class="info-grid">
                         <div class="info-field">
                             <div class="field-label">Street</div>
-                            <div class="field-value">Purok 1</div>
+                            <div class="field-value">{{ $teacher->street ?? '-' }}</div>
                         </div>
                         <div class="info-field">
                             <div class="field-label">Barangay</div>
-                            <div class="field-value">Madaum</div>
+                            <div class="field-value">{{ $teacher->barangay ?? '-' }}</div>
                         </div>
                         <div class="info-field">
                             <div class="field-label">City</div>
-                            <div class="field-value">Tagum City</div>
+                            <div class="field-value">{{ $teacher->city ?? '-' }}</div>
                         </div>
                         <div class="info-field">
                             <div class="field-label">Province</div>
-                            <div class="field-value">Davao del Norte</div>
+                            <div class="field-value">{{ $teacher->province ?? '-' }}</div>
                         </div>
                     </div>
                 </div>
@@ -447,11 +475,20 @@
                 <div class="profile-form edit-mode-content">
                     <div class="profile-picture-section">
                         <div class="profile-picture-edit">
-                            <div class="profile-picture">
-                                <!-- Profile picture placeholder -->
+                            <div class="profile-picture" id="profilePictureEdit">
+                                @if($teacher->profile_picture)
+                                    <img src="{{ asset('storage/' . $teacher->profile_picture) }}" alt="Profile Picture" id="profilePictureEditImg">
+                                @else
+                                    <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background-color: #e5e7eb; color: #6b7280; font-size: 48px;">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 60px; height: 60px;">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                    </div>
+                                @endif
                             </div>
-                            <div class="camera-icon">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="camera-icon" id="cameraIcon">
+                                <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; color: white;">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                 </svg>
@@ -465,26 +502,26 @@
                         <div class="info-grid">
                             <div class="info-field">
                                 <div class="field-label">First Name</div>
-                                <input type="text" class="field-input" value="Ninyo" id="firstName">
+                                <input type="text" class="field-input" value="{{ $teacher->first_name }}" id="firstName">
                             </div>
                             <div class="info-field">
                                 <div class="field-label">Last Name</div>
-                                <input type="text" class="field-input" value="Silayan" id="lastName">
+                                <input type="text" class="field-input" value="{{ $teacher->last_name }}" id="lastName">
                             </div>
                             <div class="info-field">
                                 <div class="field-label">Email</div>
-                                <input type="email" class="field-input" value="Ambot32@gmail.com" id="email">
+                                <input type="email" class="field-input" value="{{ $teacher->email }}" id="email">
                             </div>
                             <div class="info-field">
                                 <div class="field-label">Gender</div>
                                 <select class="field-input" id="gender">
-                                    <option value="Male" selected>Male</option>
-                                    <option value="Female">Female</option>
+                                    <option value="Male" {{ $teacher->gender === 'Male' ? 'selected' : '' }}>Male</option>
+                                    <option value="Female" {{ $teacher->gender === 'Female' ? 'selected' : '' }}>Female</option>
                                 </select>
                             </div>
                             <div class="info-field">
                                 <div class="field-label">Mobile Number</div>
-                                <input type="text" class="field-input" value="09123456789" id="mobileNumber">
+                                <input type="text" class="field-input" value="{{ $teacher->mobile_number }}" id="mobileNumber">
                             </div>
                         </div>
                     </div>
@@ -495,19 +532,19 @@
                         <div class="info-grid">
                             <div class="info-field">
                                 <div class="field-label">Street</div>
-                                <input type="text" class="field-input" value="Purok 1" id="street">
+                                <input type="text" class="field-input" value="{{ $teacher->street ?? '' }}" id="street">
                             </div>
                             <div class="info-field">
                                 <div class="field-label">Barangay</div>
-                                <input type="text" class="field-input" value="Madaum" id="barangay">
+                                <input type="text" class="field-input" value="{{ $teacher->barangay ?? '' }}" id="barangay">
                             </div>
                             <div class="info-field">
                                 <div class="field-label">City</div>
-                                <input type="text" class="field-input" value="Tagum City" id="city">
+                                <input type="text" class="field-input" value="{{ $teacher->city ?? '' }}" id="city">
                             </div>
                             <div class="info-field">
                                 <div class="field-label">Province</div>
-                                <input type="text" class="field-input" value="Davao del Norte" id="province">
+                                <input type="text" class="field-input" value="{{ $teacher->province ?? '' }}" id="province">
                             </div>
                         </div>
                     </div>
@@ -541,6 +578,59 @@
             });
         }
 
+        // Profile picture upload
+        const cameraIcon = document.getElementById('cameraIcon');
+        const profilePictureInput = document.getElementById('profilePictureInput');
+        const profilePictureEdit = document.getElementById('profilePictureEdit');
+        const profilePictureEditImg = document.getElementById('profilePictureEditImg');
+        let selectedProfilePicture = null;
+
+        if (cameraIcon && profilePictureInput) {
+            cameraIcon.addEventListener('click', function() {
+                profilePictureInput.click();
+            });
+
+            profilePictureInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select an image file.');
+                        return;
+                    }
+
+                    // Validate file size (2MB max)
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert('Image size must be less than 2MB.');
+                        return;
+                    }
+
+                    selectedProfilePicture = file;
+
+                    // Preview the image
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        if (profilePictureEditImg) {
+                            profilePictureEditImg.src = e.target.result;
+                        } else {
+                            // Create img element if it doesn't exist
+                            const img = document.createElement('img');
+                            img.id = 'profilePictureEditImg';
+                            img.src = e.target.result;
+                            img.alt = 'Profile Picture';
+                            img.style.width = '100%';
+                            img.style.height = '100%';
+                            img.style.objectFit = 'cover';
+                            img.style.borderRadius = '50%';
+                            profilePictureEdit.innerHTML = '';
+                            profilePictureEdit.appendChild(img);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
         // Edit mode toggle
         const editIcon = document.getElementById('editIcon');
         const profileContainer = document.getElementById('profileContainer');
@@ -551,6 +641,11 @@
             editIcon.addEventListener('click', function() {
                 profileContainer.classList.remove('view-mode');
                 profileContainer.classList.add('edit-mode');
+                // Reset file input when entering edit mode
+                if (profilePictureInput) {
+                    profilePictureInput.value = '';
+                    selectedProfilePicture = null;
+                }
             });
         }
 
@@ -560,6 +655,11 @@
                 // Switch back to view mode without saving
                 profileContainer.classList.remove('edit-mode');
                 profileContainer.classList.add('view-mode');
+                // Reset file input
+                if (profilePictureInput) {
+                    profilePictureInput.value = '';
+                    selectedProfilePicture = null;
+                }
             });
         }
 
@@ -567,42 +667,99 @@
         if (saveButton) {
             saveButton.addEventListener('click', function() {
                 // Get all input values
-                const firstName = document.getElementById('firstName').value;
-                const lastName = document.getElementById('lastName').value;
-                const email = document.getElementById('email').value;
+                const firstName = document.getElementById('firstName').value.trim();
+                const lastName = document.getElementById('lastName').value.trim();
+                const email = document.getElementById('email').value.trim();
                 const gender = document.getElementById('gender').value;
-                const mobileNumber = document.getElementById('mobileNumber').value;
-                const street = document.getElementById('street').value;
-                const barangay = document.getElementById('barangay').value;
-                const city = document.getElementById('city').value;
-                const province = document.getElementById('province').value;
+                const mobileNumber = document.getElementById('mobileNumber').value.trim();
+                const street = document.getElementById('street').value.trim();
+                const barangay = document.getElementById('barangay').value.trim();
+                const city = document.getElementById('city').value.trim();
+                const province = document.getElementById('province').value.trim();
 
-                // Update display values
-                const fieldValues = document.querySelectorAll('.field-value');
-                if (fieldValues.length >= 9) {
-                    fieldValues[0].textContent = firstName;
-                    fieldValues[1].textContent = lastName;
-                    fieldValues[2].textContent = email;
-                    fieldValues[3].textContent = gender;
-                    fieldValues[4].textContent = mobileNumber;
-                    fieldValues[5].textContent = street;
-                    fieldValues[6].textContent = barangay;
-                    fieldValues[7].textContent = city;
-                    fieldValues[8].textContent = province;
+                // Disable save button during submission
+                saveButton.disabled = true;
+                saveButton.textContent = 'Saving...';
+
+                // Get CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+                // Prepare form data
+                const formData = new FormData();
+                formData.append('first_name', firstName);
+                formData.append('last_name', lastName);
+                formData.append('email', email);
+                formData.append('gender', gender);
+                formData.append('mobile_number', mobileNumber);
+                formData.append('street', street);
+                formData.append('barangay', barangay);
+                formData.append('city', city);
+                formData.append('province', province);
+                
+                // Add profile picture if selected
+                if (selectedProfilePicture) {
+                    formData.append('profile_picture', selectedProfilePicture);
+                }
+                
+                if (csrfToken) {
+                    formData.append('_token', csrfToken);
                 }
 
-                // Update profile name and email
-                const profileName = document.querySelector('.profile-name');
-                const profileEmail = document.querySelector('.profile-email');
-                if (profileName) profileName.textContent = firstName + ' ' + lastName;
-                if (profileEmail) profileEmail.textContent = email;
+                // Send update request
+                fetch('/teacher/profile', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(response => {
+                    return response.json().then(data => {
+                        if (!response.ok) {
+                            // Handle validation errors
+                            if (data.errors) {
+                                const errorMessages = Object.values(data.errors).flat().join(', ');
+                                throw new Error(errorMessages || data.error || 'Validation failed');
+                            }
+                            throw new Error(data.error || 'Server error');
+                        }
+                        return data;
+                    });
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+                    if (data.success) {
+                        // Check if profile picture was uploaded
+                        const profilePictureUploaded = selectedProfilePicture !== null;
+                        console.log('Profile picture uploaded:', profilePictureUploaded);
+                        console.log('Profile picture path:', data.teacher?.profile_picture);
+                        
+                        // Reset file input
+                        if (profilePictureInput) {
+                            profilePictureInput.value = '';
+                            selectedProfilePicture = null;
+                        }
 
-                // Switch back to view mode
-                profileContainer.classList.remove('edit-mode');
-                profileContainer.classList.add('view-mode');
-
-                // Show success message
-                alert('Profile updated successfully!');
+                        // Show success message
+                        alert('Profile updated successfully!');
+                        
+                        // Always reload page to ensure all changes are reflected, especially profile picture
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + (data.error || 'Failed to update profile'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred: ' + error.message);
+                })
+                .finally(() => {
+                    // Re-enable save button
+                    saveButton.disabled = false;
+                    saveButton.textContent = 'Save';
+                });
             });
         }
 

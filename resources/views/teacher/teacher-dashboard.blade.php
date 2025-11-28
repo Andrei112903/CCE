@@ -212,23 +212,30 @@
                         <h2 class="panel-title">Announcements</h2>
                     </div>
                     <ul class="announcements-list">
-                        <li class="announcement-item">
-                            <div class="announcement-text">Faculty meeting scheduled on Friday at 3 PM.</div>
-                            <div class="announcement-date">Nov 21, 2025</div>
-                        </li>
-                        <li class="announcement-item">
-                            <div class="announcement-text">Midterm grades submission is due next week.</div>
-                            <div class="announcement-date">Nov 20, 2025</div>
-                        </li>
-                        <li class="announcement-item">
-                            <div class="announcement-text">Campus Intramurals will start next month.</div>
-                            <div class="announcement-date">Nov 18, 2025</div>
-                        </li>
-                        <li class="announcement-item">
-                            <div class="announcement-text">System maintenance on Saturday, 1-3 PM.</div>
-                            <div class="announcement-date">Nov 10, 2025</div>
-                        </li>
+                        @forelse($announcements ?? [] as $announcement)
+                            <li class="announcement-item">
+                                <div class="announcement-text">
+                                    <strong>{{ $announcement->title }}</strong>
+                                    @if(strlen($announcement->content) > 100)
+                                        <p style="margin-top: 4px; font-size: 13px; color: #6b7280; font-weight: normal;">{{ substr(strip_tags($announcement->content), 0, 100) }}...</p>
+                                    @else
+                                        <p style="margin-top: 4px; font-size: 13px; color: #6b7280; font-weight: normal;">{{ strip_tags($announcement->content) }}</p>
+                                    @endif
+                                </div>
+                                <div class="announcement-date">{{ \Carbon\Carbon::parse($announcement->date)->format('M d, Y') }}</div>
+                            </li>
+                        @empty
+                            <li class="announcement-item">
+                                <div class="announcement-text" style="color: #6b7280; font-style: italic;">No announcements available.</div>
+                                <div class="announcement-date"></div>
+                            </li>
+                        @endforelse
                     </ul>
+                    @if(isset($announcements) && $announcements->count() > 0)
+                    <div style="text-align: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+                        <a href="/teacher/announcements" style="color: var(--um-red); text-decoration: none; font-size: 14px; font-weight: 600;">View All Announcements →</a>
+                    </div>
+                    @endif
                 </div>
             </div>
         </main>
