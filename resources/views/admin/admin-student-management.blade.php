@@ -102,9 +102,17 @@
             </header>
 
             
-            <form method="GET" action="{{ route('admin.student-management') }}" style="margin-bottom: 20px; position: relative; display: inline-block; width: 100%; max-width: 500px;">
-                <input type="text" name="search" value="{{ $search }}" placeholder="Search students..." style="width: 100%; padding: 12px 40px 12px 16px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; box-sizing: border-box;">
-                <button type="submit" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0;">
+            <form method="GET" action="{{ route('admin.student-management') }}" id="searchForm" style="margin-bottom: 20px; position: relative; display: inline-block; width: 100%; max-width: 500px;">
+                <input type="text" name="search" id="searchInput" value="{{ $search }}" placeholder="Search by Student ID or Name..." style="width: 100%; padding: 12px 40px 12px 16px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; box-sizing: border-box; transition: border-color 0.2s;">
+                @if($search)
+                <button type="button" id="clearSearchBtn" style="position: absolute; right: 40px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;" title="Clear search">
+                    <svg style="width: 16px; height: 16px; color: #6c757d;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+                @endif
+                <button type="submit" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0;" title="Search">
                     <svg style="width: 18px; height: 18px; color: #6c757d;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="m21 21-4.35-4.35"></path>
@@ -346,6 +354,28 @@
                 }
             });
         });
+        
+        // Clear search functionality
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+        const searchInput = document.getElementById('searchInput');
+        const searchForm = document.getElementById('searchForm');
+        
+        if (clearSearchBtn) {
+            clearSearchBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                window.location.href = '{{ route("admin.student-management") }}';
+            });
+        }
+        
+        // Allow Enter key to submit search
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchForm.submit();
+                }
+            });
+        }
         
         // Mobile menu toggle
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');

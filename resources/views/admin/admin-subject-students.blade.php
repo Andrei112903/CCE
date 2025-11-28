@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Student Grades</title>
+    <title>Admin - Enrolled Students: {{ $subject->code }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/dashboard.css">
 </head>
@@ -46,7 +46,7 @@
 
                 <div class="nav-section">
                     <div class="nav-section-title">Online Enrollment</div>
-                    <a href="/admin/add-subject" class="nav-item">
+                    <a href="/admin/add-subject" class="nav-item active">
                         <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
@@ -62,7 +62,7 @@
 
                 <div class="nav-section">
                     <div class="nav-section-title">Records</div>
-                    <a href="/admin/grades" class="nav-item active">
+                    <a href="/admin/grades" class="nav-item">
                         <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                         </svg>
@@ -71,12 +71,12 @@
                 </div>
 
                 <div class="nav-section">
-                    <div class="nav-section-title">Student Account</div>
-                    <a href="#" class="nav-item">
+                    <div class="nav-section-title">Communication</div>
+                    <a href="/admin/announcements" class="nav-item">
                         <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>
                         </svg>
-                        Assessment
+                        Announcements
                     </a>
                 </div>
             </nav>
@@ -86,7 +86,14 @@
         <main class="main-content">
             
             <header class="content-header">
-                <h1 class="page-title">Student Grades</h1>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <a href="{{ route('admin.add-subject') }}" style="display: inline-flex; align-items: center; padding: 8px; border-radius: 50%; background-color: #f3f4f6; color: #374151; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#e5e7eb'" onmouseout="this.style.backgroundColor='#f3f4f6'" title="Back to Subjects">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </a>
+                    <h1 class="page-title">Enrolled Students: {{ $subject->code }} - {{ $subject->title }}</h1>
+                </div>
                 <div class="user-info">
                     <div class="user-icon">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,51 +108,57 @@
                 </div>
             </header>
 
-            
-            <form method="GET" action="{{ route('admin.grades') }}" id="searchForm" style="margin-bottom: 24px; position: relative; max-width: 500px;">
-                <input type="text" name="search" id="searchInput" value="{{ $search }}" placeholder="Search by Student ID or Name..." style="width: 100%; padding: 12px 45px 12px 16px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; box-sizing: border-box; background-color: white; transition: border-color 0.2s;">
-                @if($search)
-                <button type="button" id="clearSearchBtn" style="position: absolute; right: 45px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;" title="Clear search">
-                    <svg style="width: 16px; height: 16px; color: #6c757d;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-                @endif
-                <button type="submit" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0;" title="Search">
-                    <svg style="width: 20px; height: 20px; color: #6c757d;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </button>
-            </form>
+            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h2 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 600; color: #212529; font-family: 'Inter', sans-serif;">Subject Information</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                    <div>
+                        <span style="font-size: 12px; color: #6c757d; font-weight: 500; font-family: 'Inter', sans-serif;">Subject Code:</span>
+                        <p style="margin: 4px 0 0 0; font-size: 14px; color: #212529; font-family: 'Inter', sans-serif;">{{ $subject->code }}</p>
+                    </div>
+                    <div>
+                        <span style="font-size: 12px; color: #6c757d; font-weight: 500; font-family: 'Inter', sans-serif;">Subject Title:</span>
+                        <p style="margin: 4px 0 0 0; font-size: 14px; color: #212529; font-family: 'Inter', sans-serif;">{{ $subject->title }}</p>
+                    </div>
+                    <div>
+                        <span style="font-size: 12px; color: #6c757d; font-weight: 500; font-family: 'Inter', sans-serif;">Units:</span>
+                        <p style="margin: 4px 0 0 0; font-size: 14px; color: #212529; font-family: 'Inter', sans-serif;">{{ number_format($subject->units, 1) }}</p>
+                    </div>
+                    <div>
+                        <span style="font-size: 12px; color: #6c757d; font-weight: 500; font-family: 'Inter', sans-serif;">Total Enrolled:</span>
+                        <p style="margin: 4px 0 0 0; font-size: 14px; color: #212529; font-family: 'Inter', sans-serif; font-weight: 600;">{{ $students->count() }} student(s)</p>
+                    </div>
+                </div>
+            </div>
 
             
             <div class="course-table-container">
-                <table class="teacher-table" style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);">
+                <table class="teacher-table" style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                     <thead>
-                        <tr style="background-color: #f3f4f6;">
-                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em;">Student ID</th>
-                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em;">Student Name</th>
-                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em;">Year Level</th>
-                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em;">Email</th>
-                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em;">Action</th>
+                        <tr style="background-color: #f8f9fa; border-bottom: 2px solid #e9ecef;">
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Student ID</th>
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Student Name</th>
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Year Level</th>
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Email</th>
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Schedule</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($students as $student)
-                        <tr style="border-bottom: 1px solid #e5e7eb;" class="student-row">
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->student_id }}</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->first_name }} {{ $student->last_name }}</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->grade_level ?? 'N/A' }}</td>
-                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->email }}</td>
-                            <td style="padding: 12px 16px;">
-                                <a href="{{ route('admin.view-student-grades', $student->student_id) }}" class="view-grades-btn" style="background-color: #22c55e; color: white; border: none; padding: 6px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background-color 0.2s; text-decoration: none; display: inline-block;">View</a>
-                            </td>
+                        @forelse($students as $item)
+                        @php
+                            $student = $item['student'];
+                            $enrollment = $item['enrollment'];
+                        @endphp
+                        <tr style="border-bottom: 1px solid #e9ecef;">
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->student_id ?? '-' }}</td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->first_name ?? '' }} {{ $student->last_name ?? '' }}</td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->grade_level ?? '-' }}</td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $student->email ?? '-' }}</td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $enrollment->schedule ?? '-' }}</td>
                         </tr>
                         @empty
                         <tr>
                             <td colspan="5" style="padding: 40px 16px; text-align: center; color: #6c757d; font-size: 14px;">
-                                No students found.
+                                No students enrolled in this subject yet.
                             </td>
                         </tr>
                         @endforelse
@@ -174,39 +187,6 @@
                 }
             });
         }
-
-        // Clear search functionality
-        const clearSearchBtn = document.getElementById('clearSearchBtn');
-        const searchInput = document.getElementById('searchInput');
-        const searchForm = document.getElementById('searchForm');
-        
-        if (clearSearchBtn) {
-            clearSearchBtn.addEventListener('click', function() {
-                searchInput.value = '';
-                window.location.href = '{{ route("admin.grades") }}';
-            });
-        }
-        
-        // Allow Enter key to submit search
-        if (searchInput) {
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    searchForm.submit();
-                }
-            });
-        }
-
-        // View button hover effect
-        const viewButtons = document.querySelectorAll('.view-grades-btn');
-        viewButtons.forEach(function(btn) {
-            btn.addEventListener('mouseenter', function() {
-                this.style.backgroundColor = '#16a34a';
-            });
-            btn.addEventListener('mouseleave', function() {
-                this.style.backgroundColor = '#22c55e';
-            });
-        });
     </script>
 </body>
 </html>

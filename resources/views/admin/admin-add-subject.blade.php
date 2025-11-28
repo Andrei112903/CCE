@@ -132,6 +132,7 @@
                         <tr style="background-color: #f8f9fa; border-bottom: 2px solid #e9ecef;">
                             <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Subject Code</th>
                             <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Subject Title</th>
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Description</th>
                             <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Program</th>
                             <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Year Level</th>
                             <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 14px;">Units</th>
@@ -146,6 +147,7 @@
                         <tr style="border-bottom: 1px solid #e9ecef;">
                             <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $subject->code }}</td>
                             <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $subject->title }}</td>
+                            <td style="padding: 12px 16px; color: #212529; font-size: 14px; max-width: 300px; word-wrap: break-word;">{{ $subject->description ?? '-' }}</td>
                             <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $subject->program ?? '-' }}</td>
                             <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $subject->year_level ?? '-' }}</td>
                             <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ number_format($subject->units, 1) }}</td>
@@ -153,6 +155,7 @@
                             <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $subject->schedule ?? '-' }}</td>
                             <td style="padding: 12px 16px; color: #212529; font-size: 14px;">{{ $subject->room ?? '-' }}</td>
                             <td style="padding: 12px 16px;">
+                                <a href="{{ route('admin.subjects.view-students', $subject->id) }}" style="background-color: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer; margin-right: 8px; font-family: 'Inter', sans-serif; text-decoration: none; display: inline-block;">View</a>
                                 <button class="edit-subject-btn" 
                                     data-id="{{ $subject->id }}"
                                     data-code="{{ $subject->code }}"
@@ -174,7 +177,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="9" style="padding: 40px 16px; text-align: center; color: #6c757d; font-size: 14px;">
+                            <td colspan="10" style="padding: 40px 16px; text-align: center; color: #6c757d; font-size: 14px;">
                                 No subjects added yet. Click "Add Subject" to create one.
                             </td>
                         </tr>

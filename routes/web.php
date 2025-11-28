@@ -148,6 +148,7 @@ Route::post('/admin/subjects', [AdminController::class, 'storeSubject'])->name('
 Route::get('/admin/subjects/{id}/edit', [AdminController::class, 'editSubject'])->name('admin.subjects.edit');
 Route::put('/admin/subjects/{id}', [AdminController::class, 'updateSubject'])->name('admin.subjects.update');
 Route::delete('/admin/subjects/{id}', [AdminController::class, 'deleteSubject'])->name('admin.subjects.delete');
+Route::get('/admin/subjects/{id}/students', [AdminController::class, 'viewSubjectStudents'])->name('admin.subjects.view-students');
 
 
 Route::get('/admin/student-management', [AdminController::class, 'studentManagement'])->name('admin.student-management');

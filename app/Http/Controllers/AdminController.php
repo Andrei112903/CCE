@@ -52,8 +52,7 @@ class AdminController extends Controller
                 $q->where('student_id', 'like', "%{$search}%")
                   ->orWhere('first_name', 'like', "%{$search}%")
                   ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('grade_level', 'like', "%{$search}%");
+                  ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
             });
         }
         
@@ -71,7 +70,7 @@ class AdminController extends Controller
      */
     public function addSubject()
     {
-        $subjects = Subject::orderBy('created_at', 'desc')->get();
+        $subjects = Subject::orderBy('title', 'asc')->get();
         
         return view('admin.admin-add-subject', [
             'subjects' => $subjects,
@@ -108,7 +107,7 @@ class AdminController extends Controller
     public function editSubject($id)
     {
         $subject = Subject::findOrFail($id);
-        $subjects = Subject::orderBy('created_at', 'desc')->get();
+        $subjects = Subject::orderBy('title', 'asc')->get();
         
         return view('admin.admin-add-subject', [
             'subjects' => $subjects,
@@ -399,7 +398,7 @@ class AdminController extends Controller
                 $q->where('student_id', 'like', "%{$search}%")
                   ->orWhere('first_name', 'like', "%{$search}%")
                   ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                  ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
             });
         }
         
@@ -439,6 +438,34 @@ class AdminController extends Controller
         return view('admin.admin-student-grades', [
             'student' => $student,
             'enrollments' => $enrollments,
+        ]);
+    }
+
+    /**
+     * View students enrolled in a specific subject.
+     */
+    public function viewSubjectStudents($id)
+    {
+        $subject = Subject::findOrFail($id);
+        
+        // Get all enrollments for this subject with student relationship
+        $enrollments = StudentEnrollment::where('subject_code', $subject->code)
+            ->with('student')
+            ->get();
+        
+        // Get student details, filtering out any enrollments without students
+        $students = $enrollments->filter(function($enrollment) {
+            return $enrollment->student !== null;
+        })->map(function($enrollment) {
+            return [
+                'enrollment' => $enrollment,
+                'student' => $enrollment->student,
+            ];
+        });
+        
+        return view('admin.admin-subject-students', [
+            'subject' => $subject,
+            'students' => $students,
         ]);
     }
 }
